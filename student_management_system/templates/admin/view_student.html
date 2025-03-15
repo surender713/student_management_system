@@ -1,0 +1,219 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Student Details</h1>
+        <div>
+            <a href="{{ url_for('admin.edit_student', student_id=student.id) }}" class="btn btn-primary me-2">
+                <i class="fas fa-edit me-1"></i>Edit Student
+            </a>
+            <a href="{{ url_for('admin.students') }}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left me-1"></i>Back to Students
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Student Information Card -->
+        <div class="col-lg-4">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Personal Information</h6>
+                </div>
+                <div class="card-body">
+                    <div class="text-center mb-4">
+                        <img class="img-profile rounded-circle" src="https://ui-avatars.com/api/?name={{ student.full_name }}&background=4e73df&color=ffffff&size=128">
+                        <h4 class="mt-3">{{ student.full_name }}</h4>
+                        <p class="text-muted">
+                            <span class="badge bg-primary">Student</span>
+                            <span class="badge bg-secondary">{{ student.class.name }} - {{ student.class.section }}</span>
+                        </p>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <h6 class="font-weight-bold">Roll Number</h6>
+                        <p>{{ student.roll_number }}</p>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <h6 class="font-weight-bold">Gender</h6>
+                        <p>{{ student.gender|capitalize }}</p>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <h6 class="font-weight-bold">Date of Birth</h6>
+                        <p>{{ student.date_of_birth.strftime('%d-%m-%Y') }}</p>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <h6 class="font-weight-bold">Email</h6>
+                        <p>{{ student.user.email }}</p>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <h6 class="font-weight-bold">Phone</h6>
+                        <p>{{ student.phone or 'Not provided' }}</p>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <h6 class="font-weight-bold">Address</h6>
+                        <p>{{ student.address or 'Not provided' }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Parent Information Card -->
+        <div class="col-lg-4">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Parent Information</h6>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <h6 class="font-weight-bold">Parent Name</h6>
+                        <p>{{ student.parent_name or 'Not provided' }}</p>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <h6 class="font-weight-bold">Parent Phone</h6>
+                        <p>{{ student.parent_phone or 'Not provided' }}</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Academic Information Card -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Academic Information</h6>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <h6 class="font-weight-bold">Class</h6>
+                        <p>{{ student.class.name }} - {{ student.class.section }}</p>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <h6 class="font-weight-bold">Academic Year</h6>
+                        <p>{{ student.class.academic_year }}</p>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <h6 class="font-weight-bold">Class Teacher</h6>
+                        <p>{{ student.class.teacher.full_name }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Performance Card -->
+        <div class="col-lg-4">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                    <h6 class="m-0 font-weight-bold text-primary">Performance Overview</h6>
+                    <a href="{{ url_for('admin.class_rankings', class_id=student.class_id) }}" class="btn btn-sm btn-outline-primary">
+                        <i class="fas fa-chart-line me-1"></i>View Rankings
+                    </a>
+                </div>
+                <div class="card-body">
+                    {% if student.marks %}
+                        {% set total_percentage = 0 %}
+                        {% set count = 0 %}
+                        {% for mark in student.marks %}
+                            {% set percentage = (mark.marks_obtained / mark.exam.total_marks) * 100 %}
+                            {% set total_percentage = total_percentage + percentage %}
+                            {% set count = count + 1 %}
+                        {% endfor %}
+                        {% set avg_percentage = total_percentage / count %}
+                        
+                        <div class="text-center mb-4">
+                            <div class="display-4 font-weight-bold">{{ avg_percentage|round(1) }}%</div>
+                            <p class="text-muted">Average Performance</p>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <h6 class="font-weight-bold">Performance Status</h6>
+                            {% if avg_percentage >= 75 %}
+                                <div class="badge bg-success p-2">Excellent</div>
+                            {% elif avg_percentage >= 60 %}
+                                <div class="badge bg-primary p-2">Good</div>
+                            {% elif avg_percentage >= 40 %}
+                                <div class="badge bg-warning p-2">Average</div>
+                            {% else %}
+                                <div class="badge bg-danger p-2">Needs Improvement</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <h6 class="font-weight-bold">Total Exams</h6>
+                            <p>{{ count }}</p>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-4">
+                            <div class="mb-3">
+                                <i class="fas fa-chart-line fa-4x text-gray-300"></i>
+                            </div>
+                            <p class="text-gray-500 mb-0">No performance data available</p>
+                            <p class="text-gray-500">Student has not taken any exams yet</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Attendance Card -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Attendance Overview</h6>
+                </div>
+                <div class="card-body">
+                    {% if student.attendance %}
+                        {% set present_count = 0 %}
+                        {% set absent_count = 0 %}
+                        {% set late_count = 0 %}
+                        {% for record in student.attendance %}
+                            {% if record.status == 'present' %}
+                                {% set present_count = present_count + 1 %}
+                            {% elif record.status == 'absent' %}
+                                {% set absent_count = absent_count + 1 %}
+                            {% elif record.status == 'late' %}
+                                {% set late_count = late_count + 1 %}
+                            {% endif %}
+                        {% endfor %}
+                        {% set total_days = present_count + absent_count + late_count %}
+                        {% set attendance_percentage = (present_count / total_days) * 100 if total_days > 0 else 0 %}
+                        
+                        <div class="text-center mb-4">
+                            <div class="display-4 font-weight-bold">{{ attendance_percentage|round(1) }}%</div>
+                            <p class="text-muted">Attendance Rate</p>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <h6 class="font-weight-bold">Present Days</h6>
+                            <p>{{ present_count }} days</p>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <h6 class="font-weight-bold">Absent Days</h6>
+                            <p>{{ absent_count }} days</p>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <h6 class="font-weight-bold">Late Days</h6>
+                            <p>{{ late_count }} days</p>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-4">
+                            <div class="mb-3">
+                                <i class="fas fa-calendar-check fa-4x text-gray-300"></i>
+                            </div>
+                            <p class="text-gray-500 mb-0">No attendance data available</p>
+                            <p class="text-gray-500">Attendance has not been recorded yet</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

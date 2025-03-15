@@ -1,0 +1,263 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Rankings</h1>
+    </div>
+
+    <!-- Your Rankings -->
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Your Performance</h6>
+                </div>
+                <div class="card-body">
+                    {% if my_rankings %}
+                        <div class="table-responsive">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>Academic Year</th>
+                                        <th>Term</th>
+                                        <th>Total Marks</th>
+                                        <th>Percentage</th>
+                                        <th>Class Rank</th>
+                                        <th>School Rank</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for ranking in my_rankings %}
+                                    <tr>
+                                        <td>{{ ranking.academic_year }}</td>
+                                        <td>{{ ranking.term|capitalize }}</td>
+                                        <td>{{ ranking.total_marks }}</td>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <div class="me-2">{{ ranking.percentage|round(2) }}%</div>
+                                                <div class="progress flex-grow-1" style="height: 8px;">
+                                                    <div class="progress-bar {% if ranking.percentage >= 75 %}bg-success{% elif ranking.percentage >= 50 %}bg-info{% elif ranking.percentage >= 33 %}bg-warning{% else %}bg-danger{% endif %}" 
+                                                         role="progressbar" 
+                                                         style="width: {{ ranking.percentage }}%" 
+                                                         aria-valuenow="{{ ranking.percentage }}" 
+                                                         aria-valuemin="0" 
+                                                         aria-valuemax="100">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-primary">{{ ranking.class_rank }}</span>
+                                            {% if ranking.class_rank == 1 %}
+                                                <i class="fas fa-trophy text-warning ms-1"></i>
+                                            {% elif ranking.class_rank == 2 %}
+                                                <i class="fas fa-medal text-secondary ms-1"></i>
+                                            {% elif ranking.class_rank == 3 %}
+                                                <i class="fas fa-medal text-warning-light ms-1"></i>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-info">{{ ranking.school_rank }}</span>
+                                            {% if ranking.school_rank == 1 %}
+                                                <i class="fas fa-trophy text-warning ms-1"></i>
+                                            {% elif ranking.school_rank == 2 %}
+                                                <i class="fas fa-medal text-secondary ms-1"></i>
+                                            {% elif ranking.school_rank == 3 %}
+                                                <i class="fas fa-medal text-warning-light ms-1"></i>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-4">
+                            <div class="mb-3">
+                                <i class="fas fa-chart-line fa-4x text-gray-300"></i>
+                            </div>
+                            <p class="text-gray-500 mb-0">No ranking data available yet</p>
+                            <p class="text-gray-500">Rankings are generated at the end of each term</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Class Rankings -->
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                    <h6 class="m-0 font-weight-bold text-primary">Class Rankings</h6>
+                    {% if class_rankings %}
+                    <div class="dropdown">
+                        <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" id="classRankingDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-filter me-1"></i> Filter
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="classRankingDropdown">
+                            <li><a class="dropdown-item" href="#">Current Term</a></li>
+                            <li><a class="dropdown-item" href="#">Previous Term</a></li>
+                            <li><a class="dropdown-item" href="#">All Terms</a></li>
+                        </ul>
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="card-body">
+                    {% if class_rankings %}
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Rank</th>
+                                        <th>Student</th>
+                                        <th>Percentage</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for ranking in class_rankings %}
+                                    <tr {% if ranking.student_id == student.id %}class="table-primary"{% endif %}>
+                                        <td class="text-center">
+                                            {% if ranking.class_rank == 1 %}
+                                                <span class="badge bg-warning"><i class="fas fa-trophy me-1"></i>1</span>
+                                            {% elif ranking.class_rank == 2 %}
+                                                <span class="badge bg-secondary"><i class="fas fa-medal me-1"></i>2</span>
+                                            {% elif ranking.class_rank == 3 %}
+                                                <span class="badge bg-danger"><i class="fas fa-medal me-1"></i>3</span>
+                                            {% else %}
+                                                {{ ranking.class_rank }}
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ ranking.student.full_name }}</td>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <div class="me-2">{{ ranking.percentage|round(2) }}%</div>
+                                                <div class="progress flex-grow-1" style="height: 8px;">
+                                                    <div class="progress-bar {% if ranking.percentage >= 75 %}bg-success{% elif ranking.percentage >= 50 %}bg-info{% elif ranking.percentage >= 33 %}bg-warning{% else %}bg-danger{% endif %}" 
+                                                         role="progressbar" 
+                                                         style="width: {{ ranking.percentage }}%" 
+                                                         aria-valuenow="{{ ranking.percentage }}" 
+                                                         aria-valuemin="0" 
+                                                         aria-valuemax="100">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-4">
+                            <div class="mb-3">
+                                <i class="fas fa-users fa-4x text-gray-300"></i>
+                            </div>
+                            <p class="text-gray-500 mb-0">No class ranking data available yet</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- School Rankings -->
+        <div class="col-lg-6">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                    <h6 class="m-0 font-weight-bold text-primary">School Rankings</h6>
+                    {% if school_rankings %}
+                    <div class="dropdown">
+                        <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" id="schoolRankingDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-filter me-1"></i> Filter
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="schoolRankingDropdown">
+                            <li><a class="dropdown-item" href="#">Current Term</a></li>
+                            <li><a class="dropdown-item" href="#">Previous Term</a></li>
+                            <li><a class="dropdown-item" href="#">All Terms</a></li>
+                        </ul>
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="card-body">
+                    {% if school_rankings %}
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Rank</th>
+                                        <th>Student</th>
+                                        <th>Class</th>
+                                        <th>Percentage</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for ranking in school_rankings %}
+                                    <tr {% if ranking.student_id == student.id %}class="table-primary"{% endif %}>
+                                        <td class="text-center">
+                                            {% if ranking.school_rank == 1 %}
+                                                <span class="badge bg-warning"><i class="fas fa-trophy me-1"></i>1</span>
+                                            {% elif ranking.school_rank == 2 %}
+                                                <span class="badge bg-secondary"><i class="fas fa-medal me-1"></i>2</span>
+                                            {% elif ranking.school_rank == 3 %}
+                                                <span class="badge bg-danger"><i class="fas fa-medal me-1"></i>3</span>
+                                            {% else %}
+                                                {{ ranking.school_rank }}
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ ranking.student.full_name }}</td>
+                                        <td>{{ ranking.class.name }} - {{ ranking.class.section }}</td>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <div class="me-2">{{ ranking.percentage|round(2) }}%</div>
+                                                <div class="progress flex-grow-1" style="height: 8px;">
+                                                    <div class="progress-bar {% if ranking.percentage >= 75 %}bg-success{% elif ranking.percentage >= 50 %}bg-info{% elif ranking.percentage >= 33 %}bg-warning{% else %}bg-danger{% endif %}" 
+                                                         role="progressbar" 
+                                                         style="width: {{ ranking.percentage }}%" 
+                                                         aria-valuenow="{{ ranking.percentage }}" 
+                                                         aria-valuemin="0" 
+                                                         aria-valuemax="100">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-4">
+                            <div class="mb-3">
+                                <i class="fas fa-school fa-4x text-gray-300"></i>
+                            </div>
+                            <p class="text-gray-500 mb-0">No school ranking data available yet</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block styles %}
+<style>
+    .badge {
+        font-size: 0.8rem;
+        padding: 0.35em 0.65em;
+    }
+    
+    .table-primary {
+        --bs-table-bg: rgba(13, 110, 253, 0.1);
+        font-weight: 500;
+    }
+    
+    .progress {
+        background-color: #eaecf4;
+        border-radius: 0.25rem;
+        overflow: hidden;
+    }
+</style>
+{% endblock %} 

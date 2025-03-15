@@ -1,0 +1,266 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Rankings for {{ class_obj.name }} - {{ class_obj.section }}</h1>
+        <div>
+            <a href="{{ url_for('admin.export_class_students', class_id=class_obj.id) }}" class="btn btn-success me-2">
+                <i class="fas fa-file-export me-1"></i>Export to CSV
+            </a>
+            <a href="{{ url_for('admin.classes') }}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left me-1"></i>Back to Classes
+            </a>
+        </div>
+    </div>
+
+    <div class="card shadow mb-4">
+        <div class="card-header py-3 d-flex justify-content-between align-items-center">
+            <h6 class="m-0 font-weight-bold text-primary">Class Information</h6>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-3 mb-3">
+                    <div class="card border-left-primary shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Class Name</div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">{{ class_obj.name }}</div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fas fa-school fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <div class="card border-left-success shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Section</div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">{{ class_obj.section }}</div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fas fa-door-open fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <div class="card border-left-info shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Academic Year</div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">{{ class_obj.academic_year }}</div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fas fa-calendar fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <div class="card border-left-warning shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Class Teacher</div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">{{ class_obj.teacher.full_name }}</div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fas fa-chalkboard-teacher fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Class Rankings</h6>
+        </div>
+        <div class="card-body">
+            {% if not rankings.empty %}
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover" id="rankingsTable" width="100%" cellspacing="0">
+                        <thead>
+                            <tr>
+                                <th>Rank</th>
+                                <th>Student Name</th>
+                                <th>Roll Number</th>
+                                <th>Average Percentage</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for index, student in rankings.iterrows() %}
+                            <tr>
+                                <td>
+                                    {% if student.rank == 1 %}
+                                        <span class="badge bg-warning text-dark"><i class="fas fa-trophy me-1"></i>{{ student.rank }}</span>
+                                    {% elif student.rank == 2 %}
+                                        <span class="badge bg-secondary"><i class="fas fa-medal me-1"></i>{{ student.rank }}</span>
+                                    {% elif student.rank == 3 %}
+                                        <span class="badge bg-danger"><i class="fas fa-medal me-1"></i>{{ student.rank }}</span>
+                                    {% else %}
+                                        <span class="badge bg-primary">{{ student.rank }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ student.name }}</td>
+                                <td>{{ student.roll_number }}</td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="progress flex-grow-1 me-2" style="height: 10px;">
+                                            <div class="progress-bar 
+                                                {% if student.average_percentage >= 80 %}bg-success
+                                                {% elif student.average_percentage >= 60 %}bg-primary
+                                                {% elif student.average_percentage >= 40 %}bg-warning
+                                                {% else %}bg-danger{% endif %}" 
+                                                role="progressbar" 
+                                                style="width: {{ student.average_percentage }}%;" 
+                                                aria-valuenow="{{ student.average_percentage }}" 
+                                                aria-valuemin="0" 
+                                                aria-valuemax="100">
+                                            </div>
+                                        </div>
+                                        <span>{{ student.average_percentage }}%</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <a href="{{ url_for('admin.view_student', student_id=student.student_id) }}" class="btn btn-sm btn-info" data-bs-toggle="tooltip" title="View Details">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="text-center py-4">
+                    <div class="mb-3">
+                        <i class="fas fa-trophy fa-4x text-gray-300"></i>
+                    </div>
+                    <p class="text-gray-500 mb-0">No ranking data available for this class</p>
+                    <p class="text-gray-500">Students need to take exams to generate rankings</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    {% if not rankings.empty %}
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Performance Distribution</h6>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h6 class="m-0 font-weight-bold text-primary">Performance Categories</h6>
+                        </div>
+                        <div class="card-body">
+                            {% set excellent = rankings[rankings.average_percentage >= 80].shape[0] %}
+                            {% set good = rankings[(rankings.average_percentage >= 60) and (rankings.average_percentage < 80)].shape[0] %}
+                            {% set average = rankings[(rankings.average_percentage >= 40) and (rankings.average_percentage < 60)].shape[0] %}
+                            {% set poor = rankings[rankings.average_percentage < 40].shape[0] %}
+                            
+                            <div class="mb-3">
+                                <h6>Excellent (80-100%)</h6>
+                                <div class="progress" style="height: 20px;">
+                                    <div class="progress-bar bg-success" role="progressbar" style="width: {{ (excellent / rankings.shape[0]) * 100 }}%;" aria-valuenow="{{ excellent }}" aria-valuemin="0" aria-valuemax="{{ rankings.shape[0] }}">{{ excellent }} students</div>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <h6>Good (60-79%)</h6>
+                                <div class="progress" style="height: 20px;">
+                                    <div class="progress-bar bg-primary" role="progressbar" style="width: {{ (good / rankings.shape[0]) * 100 }}%;" aria-valuenow="{{ good }}" aria-valuemin="0" aria-valuemax="{{ rankings.shape[0] }}">{{ good }} students</div>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <h6>Average (40-59%)</h6>
+                                <div class="progress" style="height: 20px;">
+                                    <div class="progress-bar bg-warning" role="progressbar" style="width: {{ (average / rankings.shape[0]) * 100 }}%;" aria-valuenow="{{ average }}" aria-valuemin="0" aria-valuemax="{{ rankings.shape[0] }}">{{ average }} students</div>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <h6>Needs Improvement (0-39%)</h6>
+                                <div class="progress" style="height: 20px;">
+                                    <div class="progress-bar bg-danger" role="progressbar" style="width: {{ (poor / rankings.shape[0]) * 100 }}%;" aria-valuenow="{{ poor }}" aria-valuemin="0" aria-valuemax="{{ rankings.shape[0] }}">{{ poor }} students</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h6 class="m-0 font-weight-bold text-primary">Key Insights</h6>
+                        </div>
+                        <div class="card-body">
+                            <ul class="list-group">
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    Highest Percentage
+                                    <span class="badge bg-primary rounded-pill">{{ rankings.average_percentage.max() }}%</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    Average Percentage
+                                    <span class="badge bg-primary rounded-pill">{{ rankings.average_percentage.mean()|round(2) }}%</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    Total Students
+                                    <span class="badge bg-primary rounded-pill">{{ rankings.shape[0] }}</span>
+                                </li>
+                            </ul>
+                            
+                            <div class="alert alert-info mt-3">
+                                <i class="fas fa-info-circle me-2"></i>
+                                {% if excellent > 0 %}
+                                    <strong>{{ (excellent / rankings.shape[0] * 100)|round(1) }}%</strong> of students in this class are performing excellently.
+                                {% elif good > 0 %}
+                                    <strong>{{ (good / rankings.shape[0] * 100)|round(1) }}%</strong> of students in this class are performing well.
+                                {% else %}
+                                    Most students in this class need additional support to improve their performance.
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize tooltips
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl)
+        });
+        
+        // Initialize DataTable
+        $('#rankingsTable').DataTable({
+            "order": [[0, "asc"]],
+            "pageLength": 10,
+            "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]]
+        });
+    });
+</script>
+{% endblock %} 

@@ -1,0 +1,67 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-12">
+        <h1 class="mb-4">Ask a Question</h1>
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h3><i class="fas fa-question-circle me-2"></i>New Question</h3>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="">
+                    {{ form.hidden_tag() }}
+                    <div class="mb-3">
+                        {{ form.subject_id.label(class="form-label") }}
+                        {% if form.subject_id.errors %}
+                            {{ form.subject_id(class="form-select is-invalid") }}
+                            <div class="invalid-feedback">
+                                {% for error in form.subject_id.errors %}
+                                    <span>{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form.subject_id(class="form-select") }}
+                        {% endif %}
+                    </div>
+                    <div class="mb-3">
+                        {{ form.title.label(class="form-label") }}
+                        {% if form.title.errors %}
+                            {{ form.title(class="form-control is-invalid") }}
+                            <div class="invalid-feedback">
+                                {% for error in form.title.errors %}
+                                    <span>{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form.title(class="form-control") }}
+                        {% endif %}
+                    </div>
+                    <div class="mb-3">
+                        {{ form.content.label(class="form-label") }}
+                        {% if form.content.errors %}
+                            {{ form.content(class="form-control is-invalid", rows=5) }}
+                            <div class="invalid-feedback">
+                                {% for error in form.content.errors %}
+                                    <span>{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form.content(class="form-control", rows=5) }}
+                        {% endif %}
+                        <small class="form-text text-muted">
+                            Provide as much detail as possible to help your teacher understand your question.
+                        </small>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <a href="{{ url_for('student.questions') }}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>Back to Questions
+                        </a>
+                        {{ form.submit(class="btn btn-primary") }}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

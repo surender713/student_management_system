@@ -1,0 +1,220 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-12">
+        <h1 class="mb-4">Admin Dashboard</h1>
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h3><i class="fas fa-tachometer-alt me-2"></i>System Overview</h3>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="card stats-card bg-primary text-white">
+                            <div class="card-body">
+                                <i class="fas fa-user-graduate"></i>
+                                <div class="stats-number">{{ student_count }}</div>
+                                <div class="stats-title">Students</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card stats-card bg-success text-white">
+                            <div class="card-body">
+                                <i class="fas fa-chalkboard-teacher"></i>
+                                <div class="stats-number">{{ teacher_count }}</div>
+                                <div class="stats-title">Teachers</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card stats-card bg-info text-white">
+                            <div class="card-body">
+                                <i class="fas fa-school"></i>
+                                <div class="stats-number">{{ class_count }}</div>
+                                <div class="stats-title">Classes</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card stats-card bg-warning text-white">
+                            <div class="card-body">
+                                <i class="fas fa-book"></i>
+                                <div class="stats-number">{{ subject_count }}</div>
+                                <div class="stats-title">Subjects</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <!-- Top Students -->
+        <div class="card shadow mb-4">
+            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                <h4 class="mb-0"><i class="fas fa-trophy me-2"></i>Top Students</h4>
+                <a href="{{ url_for('admin.top_students') }}" class="btn btn-light btn-sm">
+                    <i class="fas fa-eye me-1"></i>View All
+                </a>
+            </div>
+            <div class="card-body">
+                {% if not top_students.empty %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Rank</th>
+                                    <th>Name</th>
+                                    <th>Roll Number</th>
+                                    <th>Class</th>
+                                    <th>Average</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for index, student in top_students.iterrows() %}
+                                    <tr>
+                                        <td>{{ student.rank }}</td>
+                                        <td>{{ student.name }}</td>
+                                        <td>{{ student.roll_number }}</td>
+                                        <td>{{ student['class'] }}</td>
+                                        <td>
+                                            {% if student.average_percentage >= 90 %}
+                                                <span class="badge bg-success">{{ student.average_percentage }}%</span>
+                                            {% elif student.average_percentage >= 70 %}
+                                                <span class="badge bg-primary">{{ student.average_percentage }}%</span>
+                                            {% elif student.average_percentage >= 50 %}
+                                                <span class="badge bg-warning">{{ student.average_percentage }}%</span>
+                                            {% else %}
+                                                <span class="badge bg-danger">{{ student.average_percentage }}%</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <a href="{{ url_for('admin.view_student', student_id=student.student_id) }}" class="btn btn-sm btn-primary">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="alert alert-info">
+                        <p class="mb-0">No student performance data available yet.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0"><i class="fas fa-bolt me-2"></i>Quick Actions</h4>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <a href="{{ url_for('admin.add_student') }}" class="btn btn-primary w-100 p-3">
+                            <i class="fas fa-user-plus fa-2x mb-2"></i>
+                            <div>Add New Student</div>
+                        </a>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <a href="{{ url_for('admin.add_teacher') }}" class="btn btn-success w-100 p-3">
+                            <i class="fas fa-chalkboard-teacher fa-2x mb-2"></i>
+                            <div>Add New Teacher</div>
+                        </a>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <a href="{{ url_for('admin.add_class') }}" class="btn btn-info w-100 p-3">
+                            <i class="fas fa-school fa-2x mb-2"></i>
+                            <div>Add New Class</div>
+                        </a>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <a href="{{ url_for('admin.add_subject') }}" class="btn btn-warning w-100 p-3">
+                            <i class="fas fa-book fa-2x mb-2"></i>
+                            <div>Add New Subject</div>
+                        </a>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <a href="{{ url_for('admin.export_students') }}" class="btn btn-secondary w-100 p-3">
+                            <i class="fas fa-file-export fa-2x mb-2"></i>
+                            <div>Export Students</div>
+                        </a>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <button class="btn btn-danger w-100 p-3 btn-print">
+                            <i class="fas fa-print fa-2x mb-2"></i>
+                            <div>Print Dashboard</div>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <!-- System Information -->
+        <div class="card shadow mb-4">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0"><i class="fas fa-info-circle me-2"></i>System Information</h4>
+            </div>
+            <div class="card-body">
+                <ul class="list-group">
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <span><i class="fas fa-server me-2"></i>System Version</span>
+                        <span class="badge bg-primary">1.0.0</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <span><i class="fas fa-database me-2"></i>Database Status</span>
+                        <span class="badge bg-success">Connected</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <span><i class="fas fa-calendar me-2"></i>Current Academic Year</span>
+                        <span class="badge bg-info">2023-2024</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0"><i class="fas fa-history me-2"></i>Recent Activity</h4>
+            </div>
+            <div class="card-body">
+                <div class="list-group">
+                    <div class="list-group-item list-group-item-action">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h6 class="mb-1">System Started</h6>
+                            <small class="text-muted">Just now</small>
+                        </div>
+                        <p class="mb-1">The Student Management System has been initialized.</p>
+                    </div>
+                    <div class="list-group-item list-group-item-action">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h6 class="mb-1">Admin Login</h6>
+                            <small class="text-muted">5 mins ago</small>
+                        </div>
+                        <p class="mb-1">Administrator logged into the system.</p>
+                    </div>
+                    <div class="list-group-item list-group-item-action">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h6 class="mb-1">Database Connected</h6>
+                            <small class="text-muted">10 mins ago</small>
+                        </div>
+                        <p class="mb-1">Successfully connected to the database server.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

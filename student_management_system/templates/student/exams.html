@@ -1,0 +1,199 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0 text-gray-800">My Exams</h1>
+    </div>
+
+    <!-- Upcoming Exams -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3 d-flex justify-content-between align-items-center">
+            <h6 class="m-0 font-weight-bold text-primary">Upcoming Exams</h6>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Subject</th>
+                            <th>Type</th>
+                            <th>Date</th>
+                            <th>Total Marks</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% set upcoming_exams = exams|selectattr('status', 'equalto', 'upcoming')|list %}
+                        {% for exam in upcoming_exams %}
+                        <tr>
+                            <td>{{ exam.title }}</td>
+                            <td>{{ exam.subject.name }}</td>
+                            <td>{{ exam.exam_type|capitalize }}</td>
+                            <td>{{ exam.exam_date.strftime('%d-%m-%Y') }}</td>
+                            <td>{{ exam.total_marks }}</td>
+                            <td>
+                                <a href="{{ url_for('student.exam_details', exam_id=exam.id) }}" class="btn btn-sm btn-info">
+                                    <i class="fas fa-eye me-1"></i> View Details
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% if not upcoming_exams %}
+            <div class="text-center py-4">
+                <div class="mb-3">
+                    <i class="fas fa-calendar-alt fa-4x text-gray-300"></i>
+                </div>
+                <p class="text-gray-500 mb-0">No upcoming exams</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Ongoing Exams -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3 d-flex justify-content-between align-items-center">
+            <h6 class="m-0 font-weight-bold text-warning">Ongoing Exams</h6>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Subject</th>
+                            <th>Type</th>
+                            <th>Date</th>
+                            <th>Total Marks</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% set ongoing_exams = exams|selectattr('status', 'equalto', 'ongoing')|list %}
+                        {% for exam in ongoing_exams %}
+                        <tr>
+                            <td>{{ exam.title }}</td>
+                            <td>{{ exam.subject.name }}</td>
+                            <td>{{ exam.exam_type|capitalize }}</td>
+                            <td>{{ exam.exam_date.strftime('%d-%m-%Y') }}</td>
+                            <td>{{ exam.total_marks }}</td>
+                            <td>
+                                <a href="{{ url_for('student.exam_details', exam_id=exam.id) }}" class="btn btn-sm btn-info">
+                                    <i class="fas fa-eye me-1"></i> View Details
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% if not ongoing_exams %}
+            <div class="text-center py-4">
+                <div class="mb-3">
+                    <i class="fas fa-hourglass-half fa-4x text-gray-300"></i>
+                </div>
+                <p class="text-gray-500 mb-0">No ongoing exams</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Completed Exams -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3 d-flex justify-content-between align-items-center">
+            <h6 class="m-0 font-weight-bold text-success">Completed Exams</h6>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Subject</th>
+                            <th>Type</th>
+                            <th>Date</th>
+                            <th>Total Marks</th>
+                            <th>Your Marks</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% set completed_exams = exams|selectattr('status', 'equalto', 'completed')|list %}
+                        {% for exam in completed_exams %}
+                        <tr>
+                            <td>{{ exam.title }}</td>
+                            <td>{{ exam.subject.name }}</td>
+                            <td>{{ exam.exam_type|capitalize }}</td>
+                            <td>{{ exam.exam_date.strftime('%d-%m-%Y') }}</td>
+                            <td>{{ exam.total_marks }}</td>
+                            <td>
+                                {% if exam.id in marks %}
+                                    {{ marks[exam.id].marks_obtained }}
+                                {% else %}
+                                    <span class="text-muted">Not submitted</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if exam.id in marks %}
+                                    {% if marks[exam.id].status == 'pending' %}
+                                        <span class="badge bg-warning">Pending Approval</span>
+                                    {% elif marks[exam.id].status == 'approved' %}
+                                        <span class="badge bg-success">Approved</span>
+                                    {% elif marks[exam.id].status == 'rejected' %}
+                                        <span class="badge bg-danger">Rejected</span>
+                                    {% endif %}
+                                {% else %}
+                                    <span class="badge bg-secondary">Not Submitted</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="btn-group" role="group">
+                                    <a href="{{ url_for('student.exam_details', exam_id=exam.id) }}" class="btn btn-sm btn-info">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    {% if exam.id not in marks %}
+                                    <a href="{{ url_for('student.submit_marks', exam_id=exam.id) }}" class="btn btn-sm btn-primary">
+                                        <i class="fas fa-upload"></i>
+                                    </a>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% if not completed_exams %}
+            <div class="text-center py-4">
+                <div class="mb-3">
+                    <i class="fas fa-check-circle fa-4x text-gray-300"></i>
+                </div>
+                <p class="text-gray-500 mb-0">No completed exams</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block styles %}
+<style>
+    .badge {
+        font-size: 0.8rem;
+        padding: 0.35em 0.65em;
+    }
+    
+    .btn-group .btn {
+        margin-right: 0.25rem;
+    }
+    
+    .btn-group .btn:last-child {
+        margin-right: 0;
+    }
+</style>
+{% endblock %} 

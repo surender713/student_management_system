@@ -1,0 +1,119 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Manage Classes</h1>
+        <a href="{{ url_for('admin.add_class') }}" class="btn btn-primary">
+            <i class="fas fa-plus-circle me-2"></i>Add New Class
+        </a>
+    </div>
+
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">All Classes</h6>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover" id="classesTable" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Class Name</th>
+                            <th>Section</th>
+                            <th>Stream</th>
+                            <th>Academic Year</th>
+                            <th>Class Teacher</th>
+                            <th>Students</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for class in classes %}
+                        <tr>
+                            <td>{{ class.id }}</td>
+                            <td>{{ class.name }}</td>
+                            <td>{{ class.section }}</td>
+                            <td>
+                                {% if class.stream %}
+                                    {% if class.stream == 'Science' %}
+                                        <span class="badge bg-success">{{ class.stream }}</span>
+                                    {% elif class.stream == 'Commerce' %}
+                                        <span class="badge bg-primary">{{ class.stream }}</span>
+                                    {% elif class.stream == 'Arts' %}
+                                        <span class="badge bg-warning text-dark">{{ class.stream }}</span>
+                                    {% else %}
+                                        {{ class.stream }}
+                                    {% endif %}
+                                {% else %}
+                                    <span class="text-muted">N/A</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ class.academic_year }}</td>
+                            <td>{{ class.teacher.full_name }}</td>
+                            <td>
+                                <a href="{{ url_for('admin.class_students', class_id=class.id) }}" class="btn btn-sm btn-info">
+                                    <i class="fas fa-users me-1"></i>View Students
+                                </a>
+                            </td>
+                            <td>
+                                <div class="btn-group" role="group">
+                                    <a href="{{ url_for('admin.edit_class', class_id=class.id) }}" class="btn btn-sm btn-primary" data-bs-toggle="tooltip" title="Edit">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal{{ class.id }}" data-bs-toggle="tooltip" title="Delete">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                                
+                                <!-- Delete Modal -->
+                                <div class="modal fade" id="deleteModal{{ class.id }}" tabindex="-1" aria-labelledby="deleteModalLabel{{ class.id }}" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="deleteModalLabel{{ class.id }}">Confirm Delete</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                Are you sure you want to delete the class <strong>{{ class.name }} - {{ class.section }}</strong>? This action cannot be undone and will also delete all associated data.
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                <form action="{{ url_for('admin.delete_class', class_id=class.id) }}" method="POST" class="d-inline">
+                                                    <button type="submit" class="btn btn-danger">Delete</button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% if not classes %}
+            <div class="text-center py-4">
+                <div class="mb-3">
+                    <i class="fas fa-school fa-4x text-gray-300"></i>
+                </div>
+                <p class="text-gray-500 mb-0">No classes found</p>
+                <p class="text-gray-500">Click the "Add New Class" button to add a class</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize tooltips
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl)
+        });
+    });
+</script>
+{% endblock %} 

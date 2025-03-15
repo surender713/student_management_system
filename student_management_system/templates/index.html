@@ -1,0 +1,64 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12 text-center mb-5">
+        <h1 class="display-4">Welcome to Student Management System</h1>
+        <p class="lead">A comprehensive platform for managing student data, performance tracking, and academic analytics.</p>
+        <hr class="my-4">
+        <p>Login to access your dashboard and explore the features.</p>
+        <a href="{{ url_for('auth.login') }}" class="btn btn-primary btn-lg">Login</a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-4 mb-4">
+        <div class="card h-100 shadow">
+            <div class="card-body text-center">
+                <i class="fas fa-user-shield fa-4x mb-3 text-primary"></i>
+                <h3 class="card-title">Admin Features</h3>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">Full Control Dashboard</li>
+                    <li class="list-group-item">Manage Students & Teachers</li>
+                    <li class="list-group-item">Class-Wise Rankings</li>
+                    <li class="list-group-item">Subject-Wise Performance Analysis</li>
+                    <li class="list-group-item">Top Students Overview</li>
+                    <li class="list-group-item">Data Export</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 mb-4">
+        <div class="card h-100 shadow">
+            <div class="card-body text-center">
+                <i class="fas fa-chalkboard-teacher fa-4x mb-3 text-primary"></i>
+                <h3 class="card-title">Teacher Features</h3>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">Class Performance Dashboard</li>
+                    <li class="list-group-item">Subject Analytics</li>
+                    <li class="list-group-item">Student Profiles</li>
+                    <li class="list-group-item">Mark Management</li>
+                    <li class="list-group-item">Attendance Tracking</li>
+                    <li class="list-group-item">Performance Reports</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 mb-4">
+        <div class="card h-100 shadow">
+            <div class="card-body text-center">
+                <i class="fas fa-user-graduate fa-4x mb-3 text-primary"></i>
+                <h3 class="card-title">Student Features</h3>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">Personal Dashboard</li>
+                    <li class="list-group-item">Class Ranking Display</li>
+                    <li class="list-group-item">Subject-Wise Analysis</li>
+                    <li class="list-group-item">Performance Trend Graphs</li>
+                    <li class="list-group-item">Top Student Insights</li>
+                    <li class="list-group-item">Goal Setting</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

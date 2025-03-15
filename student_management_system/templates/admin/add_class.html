@@ -1,0 +1,185 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Add New Class</h1>
+        <a href="{{ url_for('admin.classes') }}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left me-1"></i>Back to Classes
+        </a>
+    </div>
+
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Class Information</h6>
+        </div>
+        <div class="card-body">
+            <div class="alert alert-info mb-4">
+                <h5 class="alert-heading"><i class="fas fa-info-circle me-2"></i>Class Structure Guidelines</h5>
+                <hr>
+                <ul class="mb-0">
+                    <li><strong>Classes 1-5:</strong> Only subsections (A, B, C, etc.) - Must be assigned a Primary Teacher (PRT)</li>
+                    <li><strong>Classes 6-10:</strong> Only subsections (A, B, C, etc.) - Must be assigned a Trained Graduate Teacher (TGT)</li>
+                    <li><strong>Classes 11-12:</strong> Must have a stream (Science, Commerce, Arts) - Must be assigned a Post Graduate Teacher (PGT)</li>
+                </ul>
+            </div>
+            
+            <form method="POST" action="{{ url_for('admin.add_class') }}" id="classForm">
+                {{ form.hidden_tag() }}
+                
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            {{ form.name.label(class="form-label") }}
+                            {% if form.name.errors %}
+                                {{ form.name(class="form-control is-invalid") }}
+                                <div class="invalid-feedback">
+                                    {% for error in form.name.errors %}
+                                        <span>{{ error }}</span>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                {{ form.name(class="form-control") }}
+                            {% endif %}
+                            <small class="form-text text-muted">Enter class number (1-12)</small>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            {{ form.section.label(class="form-label") }}
+                            {% if form.section.errors %}
+                                {{ form.section(class="form-select is-invalid") }}
+                                <div class="invalid-feedback">
+                                    {% for error in form.section.errors %}
+                                        <span>{{ error }}</span>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                {{ form.section(class="form-select") }}
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            {{ form.stream.label(class="form-label") }}
+                            {% if form.stream.errors %}
+                                {{ form.stream(class="form-select is-invalid") }}
+                                <div class="invalid-feedback">
+                                    {% for error in form.stream.errors %}
+                                        <span>{{ error }}</span>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                {{ form.stream(class="form-select") }}
+                            {% endif %}
+                            <small class="form-text text-muted">Required for classes 11-12 only, leave as 'None' for classes 1-10</small>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            {{ form.academic_year.label(class="form-label") }}
+                            {% if form.academic_year.errors %}
+                                {{ form.academic_year(class="form-control is-invalid") }}
+                                <div class="invalid-feedback">
+                                    {% for error in form.academic_year.errors %}
+                                        <span>{{ error }}</span>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                {{ form.academic_year(class="form-control") }}
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            {{ form.teacher_id.label(class="form-label") }}
+                            {% if form.teacher_id.errors %}
+                                {{ form.teacher_id(class="form-select is-invalid") }}
+                                <div class="invalid-feedback">
+                                    {% for error in form.teacher_id.errors %}
+                                        <span>{{ error }}</span>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                {{ form.teacher_id(class="form-select") }}
+                            {% endif %}
+                            <small class="form-text text-muted">Teacher list will update based on class number</small>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            {{ form.school_id.label(class="form-label") }}
+                            {% if form.school_id.errors %}
+                                {{ form.school_id(class="form-select is-invalid") }}
+                                <div class="invalid-feedback">
+                                    {% for error in form.school_id.errors %}
+                                        <span>{{ error }}</span>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                {{ form.school_id(class="form-select") }}
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group mt-4">
+                    {{ form.submit(class="btn btn-primary") }}
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const nameInput = document.getElementById('name');
+        const streamSelect = document.getElementById('stream');
+        const classForm = document.getElementById('classForm');
+        
+        // Function to update stream field based on class number
+        function updateStreamField() {
+            const classNumber = parseInt(nameInput.value);
+            
+            if (classNumber === 11 || classNumber === 12) {
+                // For classes 11-12, stream is required
+                streamSelect.disabled = false;
+                streamSelect.parentElement.classList.remove('text-muted');
+            } else {
+                // For other classes, stream should be None and disabled
+                streamSelect.value = '';
+                streamSelect.disabled = true;
+                streamSelect.parentElement.classList.add('text-muted');
+            }
+        }
+        
+        // Update on page load
+        updateStreamField();
+        
+        // Update when class number changes
+        nameInput.addEventListener('input', function() {
+            updateStreamField();
+            
+            // Submit the form to refresh teacher options based on class number
+            if (nameInput.value) {
+                const formData = new FormData(classForm);
+                fetch(window.location.href, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                });
+            }
+        });
+    });
+</script>
+{% endblock %} 

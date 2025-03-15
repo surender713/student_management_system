@@ -1,0 +1,183 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>{{ teacher.full_name }}</h1>
+        <div>
+            <a href="{{ url_for('admin.edit_teacher', teacher_id=teacher.id) }}" class="btn btn-primary">
+                <i class="fas fa-edit"></i> Edit Teacher
+            </a>
+            <a href="{{ url_for('admin.teachers') }}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Back to Teachers
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Personal Information Card -->
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-user-circle me-2"></i>Personal Information</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-4 fw-bold">Full Name:</div>
+                        <div class="col-md-8">{{ teacher.full_name }}</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-4 fw-bold">Username:</div>
+                        <div class="col-md-8">{{ user.username }}</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-4 fw-bold">Email:</div>
+                        <div class="col-md-8">{{ user.email }}</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-4 fw-bold">Phone:</div>
+                        <div class="col-md-8">{{ teacher.phone or 'Not provided' }}</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-4 fw-bold">Join Date:</div>
+                        <div class="col-md-8">{{ teacher.join_date.strftime('%d %B, %Y') }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Professional Information Card -->
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0"><i class="fas fa-briefcase me-2"></i>Professional Information</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-4 fw-bold">School:</div>
+                        <div class="col-md-8">{{ school.name if school else 'Not assigned' }}</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-4 fw-bold">Category:</div>
+                        <div class="col-md-8">
+                            {% if teacher.category == 'PRT' %}
+                                <span class="badge bg-success">Primary Teacher (PRT)</span>
+                            {% elif teacher.category == 'TGT' %}
+                                <span class="badge bg-primary">Trained Graduate Teacher (TGT)</span>
+                            {% elif teacher.category == 'PGT' %}
+                                <span class="badge bg-warning text-dark">Post Graduate Teacher (PGT)</span>
+                            {% else %}
+                                <span class="badge bg-secondary">Not specified</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-4 fw-bold">Qualification:</div>
+                        <div class="col-md-8">{{ teacher.qualification or 'Not provided' }}</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-4 fw-bold">Department:</div>
+                        <div class="col-md-8">{{ teacher.department or 'Not provided' }}</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-4 fw-bold">Subject:</div>
+                        <div class="col-md-8">{{ teacher.subject_specialization or 'Not provided' }}</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-4 fw-bold">Experience:</div>
+                        <div class="col-md-8">{{ teacher.experience or 'Not provided' }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Classes Card -->
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="fas fa-chalkboard me-2"></i>Assigned Classes</h5>
+                </div>
+                <div class="card-body">
+                    {% if classes %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Class</th>
+                                        <th>Section</th>
+                                        <th>Stream</th>
+                                        <th>Academic Year</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for class_obj in classes %}
+                                    <tr>
+                                        <td>{{ class_obj.name }}</td>
+                                        <td>{{ class_obj.section }}</td>
+                                        <td>{{ class_obj.stream or 'N/A' }}</td>
+                                        <td>{{ class_obj.academic_year }}</td>
+                                        <td>
+                                            <a href="{{ url_for('admin.class_students', class_id=class_obj.id) }}" class="btn btn-sm btn-info">
+                                                <i class="fas fa-users"></i> Students
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="alert alert-info">No classes assigned to this teacher.</div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Subjects Card -->
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0"><i class="fas fa-book me-2"></i>Assigned Subjects</h5>
+                </div>
+                <div class="card-body">
+                    {% if subjects %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Subject</th>
+                                        <th>Code</th>
+                                        <th>Class</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for subject in subjects %}
+                                    <tr>
+                                        <td>{{ subject.name }}</td>
+                                        <td>{{ subject.code }}</td>
+                                        <td>
+                                            {% set class = subject.class %}
+                                            {{ class.name }} {{ class.section }}
+                                            {% if class.stream %}({{ class.stream }}){% endif %}
+                                        </td>
+                                        <td>
+                                            <a href="{{ url_for('admin.edit_subject', subject_id=subject.id) }}" class="btn btn-sm btn-primary">
+                                                <i class="fas fa-edit"></i> Edit
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="alert alert-info">No subjects assigned to this teacher.</div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

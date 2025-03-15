@@ -1,0 +1,140 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Manage Students</h1>
+        <a href="{{ url_for('admin.add_student') }}" class="btn btn-primary">
+            <i class="fas fa-plus-circle me-2"></i>Add New Student
+        </a>
+    </div>
+
+    <div class="card shadow mb-4">
+        <div class="card-header py-3 d-flex justify-content-between align-items-center">
+            <h6 class="m-0 font-weight-bold text-primary">All Students</h6>
+            <div class="dropdown">
+                <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" id="filterDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="fas fa-filter me-1"></i> Filter
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="filterDropdown">
+                    <li><a class="dropdown-item filter-item" href="#" data-filter="all">All Students</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><h6 class="dropdown-header">By Class</h6></li>
+                    {% for class in classes %}
+                    <li><a class="dropdown-item filter-item" href="#" data-filter="class-{{ class.id }}">{{ class.name }} - {{ class.section }}</a></li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover" id="studentsTable" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Full Name</th>
+                            <th>Roll Number</th>
+                            <th>Class</th>
+                            <th>Gender</th>
+                            <th>Phone</th>
+                            <th>Parent Name</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for student in students %}
+                        <tr class="student-row" data-class="{{ student.class_id }}">
+                            <td>{{ student.id }}</td>
+                            <td>{{ student.full_name }}</td>
+                            <td>{{ student.roll_number }}</td>
+                            <td>{{ student.class.name }} - {{ student.class.section }}</td>
+                            <td>{{ student.gender|capitalize }}</td>
+                            <td>{{ student.phone }}</td>
+                            <td>{{ student.parent_name }}</td>
+                            <td>
+                                <div class="btn-group" role="group">
+                                    <a href="{{ url_for('admin.view_student', student_id=student.id) }}" class="btn btn-sm btn-info" data-bs-toggle="tooltip" title="View Details">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    <a href="{{ url_for('admin.edit_student', student_id=student.id) }}" class="btn btn-sm btn-primary" data-bs-toggle="tooltip" title="Edit">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal{{ student.id }}" data-bs-toggle="tooltip" title="Delete">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                                
+                                <!-- Delete Modal -->
+                                <div class="modal fade" id="deleteModal{{ student.id }}" tabindex="-1" aria-labelledby="deleteModalLabel{{ student.id }}" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="deleteModalLabel{{ student.id }}">Confirm Delete</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                Are you sure you want to delete the student <strong>{{ student.full_name }}</strong>? This action cannot be undone.
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                <form action="{{ url_for('admin.delete_student', student_id=student.id) }}" method="POST" class="d-inline">
+                                                    <button type="submit" class="btn btn-danger">Delete</button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% if not students %}
+            <div class="text-center py-4">
+                <div class="mb-3">
+                    <i class="fas fa-user-graduate fa-4x text-gray-300"></i>
+                </div>
+                <p class="text-gray-500 mb-0">No students found</p>
+                <p class="text-gray-500">Click the "Add New Student" button to add a student</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Filter functionality
+        const filterItems = document.querySelectorAll('.filter-item');
+        const studentRows = document.querySelectorAll('.student-row');
+        
+        filterItems.forEach(item => {
+            item.addEventListener('click', function(e) {
+                e.preventDefault();
+                const filter = this.getAttribute('data-filter');
+                
+                studentRows.forEach(row => {
+                    if (filter === 'all') {
+                        row.style.display = '';
+                    } else if (filter.startsWith('class-')) {
+                        const classId = filter.replace('class-', '');
+                        if (row.getAttribute('data-class') === classId) {
+                            row.style.display = '';
+                        } else {
+                            row.style.display = 'none';
+                        }
+                    }
+                });
+                
+                // Update dropdown button text
+                document.getElementById('filterDropdown').textContent = this.textContent;
+                document.getElementById('filterDropdown').innerHTML = 
+                    `<i class="fas fa-filter me-1"></i> ${document.getElementById('filterDropdown').textContent}`;
+            });
+        });
+    });
+</script>
+{% endblock %} 

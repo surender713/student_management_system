@@ -1,0 +1,209 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white text-center">
+                <h3><i class="fas fa-sign-in-alt me-2"></i>Login</h3>
+            </div>
+            
+            <div class="card-body">
+                <!-- Role Selection -->
+                <div id="role-selection">
+                    <h4 class="text-center mb-4">Who are you?</h4>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="card role-card mb-3" data-role="admin">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-user-shield fa-3x mb-3 text-primary"></i>
+                                    <h5>Admin</h5>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card role-card mb-3" data-role="teacher">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-chalkboard-teacher fa-3x mb-3 text-success"></i>
+                                    <h5>Teacher</h5>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card role-card mb-3" data-role="student">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-user-graduate fa-3x mb-3 text-info"></i>
+                                    <h5>Student</h5>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Login Form (Initially Hidden) -->
+                <div id="login-form" style="display: none;">
+                    <div class="mb-3 text-center">
+                        <span id="selected-role-icon" class="fa-3x mb-2"></span>
+                        <h4 id="selected-role-text">Login as <span id="role-name"></span></h4>
+                        <button id="change-role" class="btn btn-sm btn-outline-secondary mt-2">Change Role</button>
+                    </div>
+                    
+                    <form method="POST" action="">
+                        {{ form.hidden_tag() }}
+                        <input type="hidden" id="role-input" name="role" value="">
+                        
+                        <div class="mb-3">
+                            {{ form.email.label(class="form-label") }}
+                            {% if form.email.errors %}
+                                {{ form.email(class="form-control is-invalid") }}
+                                <div class="invalid-feedback">
+                                    {% for error in form.email.errors %}
+                                        <span>{{ error }}</span>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                {{ form.email(class="form-control") }}
+                            {% endif %}
+                        </div>
+                        <div class="mb-3">
+                            {{ form.password.label(class="form-label") }}
+                            <div class="input-group">
+                                {% if form.password.errors %}
+                                    {{ form.password(class="form-control is-invalid", id="password-field") }}
+                                    <span class="input-group-text">
+                                        <i class="fas fa-eye toggle-password" toggle="#password-field"></i>
+                                    </span>
+                                    <div class="invalid-feedback">
+                                        {% for error in form.password.errors %}
+                                            <span>{{ error }}</span>
+                                        {% endfor %}
+                                    </div>
+                                {% else %}
+                                    {{ form.password(class="form-control", id="password-field") }}
+                                    <span class="input-group-text">
+                                        <i class="fas fa-eye toggle-password" toggle="#password-field"></i>
+                                    </span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="mb-3 form-check">
+                            {{ form.remember(class="form-check-input") }}
+                            {{ form.remember.label(class="form-check-label") }}
+                        </div>
+                        <div class="d-grid gap-2">
+                            {{ form.submit(class="btn btn-primary") }}
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <div class="card-footer text-center">
+                <div id="login-footer">
+                    <small class="text-muted">
+                        <a href="{{ url_for('auth.reset_request') }}">Forgot Password?</a>
+                    </small>
+                </div>
+                <div id="signup-options" style="display: none;">
+                    <small class="text-muted">
+                        New user? 
+                        <span id="signup-link"></span>
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block styles %}
+<style>
+    .role-card {
+        cursor: pointer;
+        transition: all 0.3s ease;
+        border: 2px solid #f8f9fa;
+    }
+    
+    .role-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        border-color: #dee2e6;
+    }
+    
+    .role-card.selected {
+        border-color: #0d6efd;
+        background-color: #f8f9fa;
+    }
+</style>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Toggle password visibility
+        const togglePassword = document.querySelector('.toggle-password');
+        if (togglePassword) {
+            togglePassword.addEventListener('click', function() {
+                const passwordField = document.querySelector(this.getAttribute('toggle'));
+                if (passwordField.type === 'password') {
+                    passwordField.type = 'text';
+                    this.classList.remove('fa-eye');
+                    this.classList.add('fa-eye-slash');
+                } else {
+                    passwordField.type = 'password';
+                    this.classList.remove('fa-eye-slash');
+                    this.classList.add('fa-eye');
+                }
+            });
+        }
+        
+        // Role selection functionality
+        const roleCards = document.querySelectorAll('.role-card');
+        const roleSelection = document.getElementById('role-selection');
+        const loginForm = document.getElementById('login-form');
+        const roleInput = document.getElementById('role-input');
+        const roleName = document.getElementById('role-name');
+        const selectedRoleIcon = document.getElementById('selected-role-icon');
+        const changeRoleBtn = document.getElementById('change-role');
+        const loginFooter = document.getElementById('login-footer');
+        const signupOptions = document.getElementById('signup-options');
+        const signupLink = document.getElementById('signup-link');
+        
+        // Initialize role input to empty string
+        roleInput.value = '';
+        
+        roleCards.forEach(card => {
+            card.addEventListener('click', function() {
+                const role = this.getAttribute('data-role');
+                roleInput.value = role;
+                roleName.textContent = role.charAt(0).toUpperCase() + role.slice(1);
+                
+                // Set the appropriate icon
+                if (role === 'admin') {
+                    selectedRoleIcon.className = 'fas fa-user-shield fa-3x mb-2 text-primary';
+                    signupLink.innerHTML = '<a href="{{ url_for("auth.register_admin_request") }}">Request Admin Access</a>';
+                } else if (role === 'teacher') {
+                    selectedRoleIcon.className = 'fas fa-chalkboard-teacher fa-3x mb-2 text-success';
+                    signupLink.innerHTML = '<a href="{{ url_for("auth.register", role="teacher") }}">Sign up as Teacher</a>';
+                } else {
+                    selectedRoleIcon.className = 'fas fa-user-graduate fa-3x mb-2 text-info';
+                    signupLink.innerHTML = '<a href="{{ url_for("auth.register", role="student") }}">Sign up as Student</a>';
+                }
+                
+                // Hide role selection, show login form
+                roleSelection.style.display = 'none';
+                loginForm.style.display = 'block';
+                loginFooter.style.display = 'none';
+                signupOptions.style.display = 'block';
+            });
+        });
+        
+        // Change role button
+        changeRoleBtn.addEventListener('click', function() {
+            loginForm.style.display = 'none';
+            roleSelection.style.display = 'block';
+            loginFooter.style.display = 'block';
+            signupOptions.style.display = 'none';
+        });
+    });
+</script>
+{% endblock %} 

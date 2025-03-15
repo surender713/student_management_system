@@ -1,0 +1,110 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-12">
+        <h1 class="mb-4">Question Details</h1>
+        <div class="card shadow mb-4">
+            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                <h3><i class="fas fa-question-circle me-2"></i>{{ question.title }}</h3>
+                <span class="badge {% if question.status == 'open' %}bg-warning{% elif question.status == 'answered' %}bg-success{% else %}bg-secondary{% endif %}">
+                    {{ question.status|capitalize }}
+                </span>
+            </div>
+            <div class="card-body">
+                <div class="question-details mb-4">
+                    <div class="d-flex justify-content-between mb-3">
+                        <div>
+                            <strong>Subject:</strong> 
+                            {% if question.subject %}
+                                {{ question.subject.name }}
+                            {% else %}
+                                General
+                            {% endif %}
+                        </div>
+                        <div>
+                            <strong>Date:</strong> {{ question.created_at.strftime('%d-%m-%Y %H:%M') }}
+                        </div>
+                    </div>
+                    <div class="question-content p-3 bg-light rounded">
+                        {{ question.content|safe }}
+                    </div>
+                </div>
+                
+                <hr>
+                
+                <h4 class="mb-3">Answers ({{ answers|length }})</h4>
+                
+                {% if answers %}
+                    <div class="answers-container">
+                        {% for answer in answers %}
+                            <div class="answer-card mb-3 p-3 {% if answer.user.role == 'teacher' %}border-primary{% else %}border-secondary{% endif %} rounded">
+                                <div class="d-flex justify-content-between mb-2">
+                                    <div>
+                                        <strong>
+                                            {% if answer.user.role == 'teacher' %}
+                                                <i class="fas fa-chalkboard-teacher text-primary me-1"></i>
+                                                Teacher: {{ answer.user.teacher_profile.full_name }}
+                                            {% else %}
+                                                <i class="fas fa-user me-1"></i>
+                                                You
+                                            {% endif %}
+                                        </strong>
+                                    </div>
+                                    <div>
+                                        <small class="text-muted">{{ answer.created_at.strftime('%d-%m-%Y %H:%M') }}</small>
+                                    </div>
+                                </div>
+                                <div class="answer-content">
+                                    {{ answer.content|safe }}
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="alert alert-info">
+                        <p class="mb-0">No answers yet. Your teacher will respond soon.</p>
+                    </div>
+                {% endif %}
+                
+                {% if question.status == 'open' %}
+                    <div class="reply-form mt-4">
+                        <h5>Add a Reply</h5>
+                        <form method="POST" action="">
+                            <div class="mb-3">
+                                <textarea name="content" class="form-control" rows="3" placeholder="Type your reply here..." required></textarea>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <a href="{{ url_for('student.questions') }}" class="btn btn-secondary">
+                                    <i class="fas fa-arrow-left me-2"></i>Back to Questions
+                                </a>
+                                <div>
+                                    <form action="{{ url_for('student.close_question', question_id=question.id) }}" method="POST" class="d-inline">
+                                        <button type="submit" class="btn btn-outline-secondary me-2">
+                                            <i class="fas fa-times-circle me-1"></i>Close Question
+                                        </button>
+                                    </form>
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-paper-plane me-1"></i>Send Reply
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                {% else %}
+                    <div class="d-flex justify-content-between mt-4">
+                        <a href="{{ url_for('student.questions') }}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>Back to Questions
+                        </a>
+                        {% if question.status == 'closed' %}
+                            <div class="alert alert-secondary mb-0">
+                                <p class="mb-0">This question is closed and cannot be replied to.</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

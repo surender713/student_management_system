@@ -1,0 +1,94 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-12">
+        <h1 class="mb-4">My Questions</h1>
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                <h3><i class="fas fa-question-circle me-2"></i>Q&A Section</h3>
+                <a href="{{ url_for('student.ask_question') }}" class="btn btn-light">
+                    <i class="fas fa-plus me-2"></i>Ask a Question
+                </a>
+            </div>
+            <div class="card-body">
+                <div class="row mb-4">
+                    <div class="col-md-12">
+                        <div class="alert alert-info">
+                            <p class="mb-0">
+                                <i class="fas fa-info-circle me-2"></i>
+                                Use this section to ask questions about your subjects. Your teachers will be able to see and answer your questions.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                {% if my_questions %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Title</th>
+                                    <th>Subject</th>
+                                    <th>Status</th>
+                                    <th>Date</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for question in my_questions %}
+                                    <tr>
+                                        <td>
+                                            <a href="{{ url_for('student.question_details', question_id=question.id) }}">
+                                                {{ question.title }}
+                                            </a>
+                                        </td>
+                                        <td>
+                                            {% if question.subject %}
+                                                {{ question.subject.name }}
+                                            {% else %}
+                                                General
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if question.status == 'open' %}
+                                                <span class="badge bg-warning">Open</span>
+                                            {% elif question.status == 'answered' %}
+                                                <span class="badge bg-success">Answered</span>
+                                            {% else %}
+                                                <span class="badge bg-secondary">Closed</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ question.created_at.strftime('%d-%m-%Y') }}</td>
+                                        <td>
+                                            <a href="{{ url_for('student.question_details', question_id=question.id) }}" class="btn btn-sm btn-primary">
+                                                <i class="fas fa-eye me-1"></i>View
+                                            </a>
+                                            {% if question.status == 'open' %}
+                                                <form action="{{ url_for('student.close_question', question_id=question.id) }}" method="POST" class="d-inline">
+                                                    <button type="submit" class="btn btn-sm btn-secondary">
+                                                        <i class="fas fa-times-circle me-1"></i>Close
+                                                    </button>
+                                                </form>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="alert alert-warning">
+                        <p class="mb-0">You haven't asked any questions yet.</p>
+                    </div>
+                    <div class="text-center mt-3">
+                        <a href="{{ url_for('student.ask_question') }}" class="btn btn-primary">
+                            <i class="fas fa-plus me-2"></i>Ask Your First Question
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 
