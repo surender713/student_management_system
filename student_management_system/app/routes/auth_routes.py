@@ -1,7 +1,7 @@
-from flask import Blueprint, render_template, redirect, url_for, flash, request
+from flask import Blueprint, render_template, redirect, url_for, flash, request, session
 from flask_login import login_user, current_user, logout_user, login_required
 from app import db, bcrypt
-from app.models import User, Admin, Teacher, Student, School, AdminRequest
+from app.models import User, Admin, Teacher, Student, School, AdminRequest, MasterAdmin
 from app.utils import user_exists
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, BooleanField, SelectField, TextAreaField, DateField
@@ -10,9 +10,21 @@ from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationE
 # Create blueprint
 auth = Blueprint('auth', __name__)
 
-# Login Form
+# School Login Form
+class SchoolLoginForm(FlaskForm):
+    school_number = StringField('School Number', validators=[DataRequired()])
+    password = PasswordField('Password', validators=[DataRequired()])
+    submit = SubmitField('Login')
+
+# Master Admin Login Form
+class MasterAdminLoginForm(FlaskForm):
+    username = StringField('Username', validators=[DataRequired()])
+    password = PasswordField('Password', validators=[DataRequired()])
+    submit = SubmitField('Login')
+
+# Login Form - Changed to use username instead of email
 class LoginForm(FlaskForm):
-    email = StringField('Email', validators=[DataRequired(), Email()])
+    username = StringField('Username', validators=[DataRequired()])
     password = PasswordField('Password', validators=[DataRequired()])
     remember = BooleanField('Remember Me')
     submit = SubmitField('Login')
@@ -69,25 +81,101 @@ class AdminRequestForm(FlaskForm):
         if user_exists(email=email.data):
             raise ValidationError('That email is already registered. Please use a different one.')
 
-# Login route
+# School login route
+@auth.route('/school-login', methods=['GET', 'POST'])
+def school_login():
+    if current_user.is_authenticated:
+        return redirect(url_for('main.home'))
+    
+    form = SchoolLoginForm()
+    
+    if form.validate_on_submit():
+        school = School.query.filter_by(school_number=form.school_number.data).first()
+        
+        if school and school.is_active and bcrypt.check_password_hash(school.password, form.password.data):
+            # Store school info in session
+            session['school_id'] = school.id
+            session['school_name'] = school.name
+            flash(f'Welcome to {school.name}! Please login with your credentials.', 'success')
+            return redirect(url_for('auth.login'))
+        else:
+            flash('Invalid school number or password. Please try again.', 'danger')
+    
+    return render_template('school_login.html', title='School Login', form=form)
+
+# Master Admin login route
+@auth.route('/master-admin-login', methods=['GET', 'POST'])
+def master_admin_login():
+    if current_user.is_authenticated:
+        return redirect(url_for('main.home'))
+    
+    form = MasterAdminLoginForm()
+    
+    if form.validate_on_submit():
+        master_admin = MasterAdmin.query.filter_by(username=form.username.data).first()
+        
+        if master_admin and bcrypt.check_password_hash(master_admin.password, form.password.data):
+            # Check if a User record already exists for this master admin
+            user = User.query.filter_by(username=master_admin.username).first()
+            
+            # If user doesn't exist, create one
+            if not user:
+                user = User(
+                    username=master_admin.username,
+                    email=master_admin.email,
+                    password=master_admin.password,  # Already hashed
+                    role='master_admin'
+                )
+                db.session.add(user)
+                db.session.commit()
+            elif user.role != 'master_admin':
+                # Update role if it's not set correctly
+                user.role = 'master_admin'
+                db.session.commit()
+                
+            login_user(user)
+            next_page = request.args.get('next')
+            if next_page:
+                return redirect(next_page)
+            return redirect(url_for('admin.manage_schools'))
+        else:
+            flash('Invalid username or password. Please try again.', 'danger')
+    
+    return render_template('master_admin_login.html', title='Master Admin Login', form=form)
+
+# Update the existing login route to use username instead of email
 @auth.route('/login', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
         return redirect(url_for('main.home'))
     
+    # Check if school is selected
+    if 'school_id' not in session:
+        flash('Please login to your school first.', 'warning')
+        return redirect(url_for('auth.school_login'))
+    
     form = LoginForm()
     
     if form.validate_on_submit():
-        user = User.query.filter_by(email=form.email.data).first()
+        user = User.query.filter_by(username=form.username.data).first()
         
         if user and bcrypt.check_password_hash(user.password, form.password.data):
-            # Get the selected role from the form
-            selected_role = request.form.get('role', '').strip()
-            
-            # Only check role if one was explicitly selected
-            if selected_role and user.role != selected_role:
-                flash(f'This email is not registered as a {selected_role}. Please select the correct role.', 'danger')
-                return render_template('login.html', title='Login', form=form)
+            # Check if user belongs to the selected school
+            if user.role == 'admin':
+                admin = Admin.query.filter_by(user_id=user.id).first()
+                if admin and admin.school_id != session['school_id']:
+                    flash('You do not have access to this school.', 'danger')
+                    return render_template('login.html', title='Login', form=form)
+            elif user.role == 'teacher':
+                teacher = Teacher.query.filter_by(user_id=user.id).first()
+                if teacher and teacher.school_id != session['school_id']:
+                    flash('You do not have access to this school.', 'danger')
+                    return render_template('login.html', title='Login', form=form)
+            elif user.role == 'student':
+                student = Student.query.filter_by(user_id=user.id).first()
+                if student and student.school_id != session['school_id']:
+                    flash('You do not have access to this school.', 'danger')
+                    return render_template('login.html', title='Login', form=form)
             
             login_user(user, remember=form.remember.data)
             next_page = request.args.get('next')
@@ -100,15 +188,16 @@ def login():
             else:  # student
                 return redirect(next_page) if next_page else redirect(url_for('student.dashboard'))
         else:
-            flash('Login unsuccessful. Please check email and password.', 'danger')
+            flash('Login unsuccessful. Please check username and password.', 'danger')
     
     return render_template('login.html', title='Login', form=form)
 
-# Logout route
+# Update logout route to clear school session
 @auth.route('/logout')
 def logout():
     logout_user()
-    return redirect(url_for('auth.login'))
+    session.clear()  # Clear all session data including school info
+    return redirect(url_for('auth.school_login'))
 
 # Registration route for students and teachers
 @auth.route('/register/<string:role>', methods=['GET', 'POST'])

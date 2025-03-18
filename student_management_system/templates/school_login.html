@@ -1,0 +1,119 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center align-items-center min-vh-75">
+        <div class="col-md-6 col-lg-5">
+            <div class="card shadow-lg fade-in">
+                <div class="card-header bg-primary text-white text-center py-4">
+                    <div class="school-icon mb-3">
+                        <i class="fas fa-school fa-3x"></i>
+                    </div>
+                    <h3 class="mb-0">School Login</h3>
+                    <p class="text-white-50 mb-0">Enter your school credentials to continue</p>
+                </div>
+                
+                <div class="card-body p-4">
+                    <form method="POST" action="" class="needs-validation" novalidate>
+                        {{ form.hidden_tag() }}
+                        
+                        <div class="mb-4">
+                            <div class="form-floating">
+                                {% if form.school_number.errors %}
+                                    {{ form.school_number(class="form-control is-invalid", placeholder="School Number") }}
+                                    <label for="school_number">School Number</label>
+                                    <div class="invalid-feedback">
+                                        {% for error in form.school_number.errors %}
+                                            <span>{{ error }}</span>
+                                        {% endfor %}
+                                    </div>
+                                {% else %}
+                                    {{ form.school_number(class="form-control", placeholder="School Number") }}
+                                    <label for="school_number">School Number</label>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <div class="form-floating">
+                                {% if form.password.errors %}
+                                    {{ form.password(class="form-control is-invalid", id="password-field", placeholder="Password") }}
+                                    <label for="password">Password</label>
+                                    <div class="invalid-feedback">
+                                        {% for error in form.password.errors %}
+                                            <span>{{ error }}</span>
+                                        {% endfor %}
+                                    </div>
+                                {% else %}
+                                    {{ form.password(class="form-control", id="password-field", placeholder="Password") }}
+                                    <label for="password">Password</label>
+                                {% endif %}
+                            </div>
+                            <div class="text-end mt-2">
+                                <button type="button" class="btn btn-link btn-sm toggle-password" toggle="#password-field">
+                                    <i class="fas fa-eye"></i> Show Password
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="d-grid gap-2">
+                            {{ form.submit(class="btn btn-primary btn-lg") }}
+                        </div>
+                    </form>
+                </div>
+                
+                <div class="card-footer text-center py-3">
+                    <div class="d-flex justify-content-center gap-3">
+                        <a href="{{ url_for('auth.master_admin_login') }}" class="text-decoration-none">
+                            <i class="fas fa-user-shield me-1"></i>Master Admin
+                        </a>
+                        <span class="text-muted">|</span>
+                        <a href="{{ url_for('main.home') }}" class="text-decoration-none">
+                            <i class="fas fa-home me-1"></i>Home
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Toggle password visibility
+        const togglePassword = document.querySelector('.toggle-password');
+        if (togglePassword) {
+            togglePassword.addEventListener('click', function() {
+                const passwordField = document.querySelector(this.getAttribute('toggle'));
+                const icon = this.querySelector('i');
+                
+                if (passwordField.type === 'password') {
+                    passwordField.type = 'text';
+                    icon.classList.remove('fa-eye');
+                    icon.classList.add('fa-eye-slash');
+                    this.innerHTML = '<i class="fas fa-eye-slash"></i> Hide Password';
+                } else {
+                    passwordField.type = 'password';
+                    icon.classList.remove('fa-eye-slash');
+                    icon.classList.add('fa-eye');
+                    this.innerHTML = '<i class="fas fa-eye"></i> Show Password';
+                }
+            });
+        }
+
+        // Form validation
+        const forms = document.querySelectorAll('.needs-validation');
+        Array.from(forms).forEach(form => {
+            form.addEventListener('submit', event => {
+                if (!form.checkValidity()) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+                form.classList.add('was-validated');
+            }, false);
+        });
+    });
+</script>
+{% endblock %} 

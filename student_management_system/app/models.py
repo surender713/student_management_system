@@ -11,6 +11,8 @@ def load_user(user_id):
 class School(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
+    school_number = db.Column(db.String(50), unique=True, nullable=False)  # Unique identifier for each school
+    password = db.Column(db.String(60), nullable=False)  # Hashed password for school login
     address = db.Column(db.Text)
     phone = db.Column(db.String(20))
     email = db.Column(db.String(120))
@@ -19,6 +21,7 @@ class School(db.Model):
     term = db.Column(db.String(20), nullable=False, default="1")
     passing_percentage = db.Column(db.Float, nullable=False, default=40.0)
     created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    is_active = db.Column(db.Boolean, default=True)  # To enable/disable school access
     
     # Relationships
     admins = db.relationship('Admin', backref='school', lazy=True)
@@ -27,7 +30,19 @@ class School(db.Model):
     classes = db.relationship('Class', backref='school', lazy=True)
     
     def __repr__(self):
-        return f"School('{self.name}')"
+        return f"School('{self.name}', '{self.school_number}')"
+
+# Master Admin model for managing all schools
+class MasterAdmin(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(50), unique=True, nullable=False)
+    email = db.Column(db.String(120), unique=True, nullable=False)
+    password = db.Column(db.String(60), nullable=False)
+    full_name = db.Column(db.String(100), nullable=False)
+    created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    
+    def __repr__(self):
+        return f"MasterAdmin('{self.username}', '{self.email}')"
 
 # User model for authentication
 class User(db.Model, UserMixin):

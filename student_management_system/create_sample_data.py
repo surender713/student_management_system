@@ -33,6 +33,8 @@ def create_sample_data(force=False):
         for i in range(1, 6):
             school = School(
                 name=f"School {i}",
+                school_number=f"SCH{i:03d}",
+                password=bcrypt.generate_password_hash("school123").decode('utf-8'),
                 address=f"Address for School {i}",
                 phone=f"123-456-{7890+i}",
                 email=f"school{i}@example.com",

@@ -3,203 +3,200 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Student Management System{% endblock %}</title>
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>{% block title %}{% endblock %} - School Management System</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/favicon.png') }}">
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
     <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
     <!-- Custom CSS -->
     <style>
         :root {
             --primary-color: #4e73df;
-            --secondary-color: #1cc88a;
-            --accent-color: #f6c23e;
+            --secondary-color: #858796;
+            --success-color: #1cc88a;
+            --info-color: #36b9cc;
+            --warning-color: #f6c23e;
             --danger-color: #e74a3b;
-            --dark-color: #5a5c69;
             --light-color: #f8f9fc;
+            --dark-color: #5a5c69;
         }
-        
+
         body {
             font-family: 'Poppins', sans-serif;
             background-color: #f8f9fc;
-            color: #333;
         }
-        
+
         .navbar {
-            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+            background: linear-gradient(135deg, var(--primary-color), #224abe);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
-        
+
         .navbar-brand {
-            font-weight: 700;
+            font-weight: 600;
             font-size: 1.5rem;
         }
-        
-        .sidebar {
-            min-height: calc(100vh - 56px);
-            background: linear-gradient(180deg, var(--primary-color) 0%, #224abe 100%);
-            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
-        }
-        
-        .sidebar .nav-link {
-            color: rgba(255, 255, 255, 0.8);
-            padding: 1rem;
+
+        .nav-link {
             font-weight: 500;
-            border-radius: 0.35rem;
-            margin: 0.2rem 0;
-            transition: all 0.3s;
+            transition: all 0.3s ease;
         }
-        
-        .sidebar .nav-link:hover {
-            color: #fff;
-            background-color: rgba(255, 255, 255, 0.1);
+
+        .nav-link:hover {
+            transform: translateY(-2px);
         }
-        
-        .sidebar .nav-link.active {
-            color: #fff;
-            background-color: rgba(255, 255, 255, 0.2);
-        }
-        
-        .sidebar .nav-link i {
-            margin-right: 0.5rem;
-            width: 1.25rem;
-            text-align: center;
-        }
-        
-        .content-wrapper {
-            min-height: calc(100vh - 56px);
-        }
-        
+
         .card {
             border: none;
-            border-radius: 0.5rem;
-            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.1);
+            border-radius: 15px;
+            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
             transition: transform 0.3s ease;
         }
-        
+
         .card:hover {
             transform: translateY(-5px);
         }
-        
+
         .card-header {
-            background-color: #fff;
-            border-bottom: 1px solid #e3e6f0;
-            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary-color), #224abe);
+            color: white;
+            border-radius: 15px 15px 0 0 !important;
         }
-        
+
+        .btn {
+            border-radius: 8px;
+            padding: 0.5rem 1.5rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
         .btn-primary {
-            background-color: var(--primary-color);
+            background: linear-gradient(135deg, var(--primary-color), #224abe);
+            border: none;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(78, 115, 223, 0.3);
+        }
+
+        .form-control {
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            border: 1px solid #d1d3e2;
+        }
+
+        .form-control:focus {
             border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.25);
         }
-        
-        .btn-success {
-            background-color: var(--secondary-color);
-            border-color: var(--secondary-color);
-        }
-        
-        .btn-warning {
-            background-color: var(--accent-color);
-            border-color: var(--accent-color);
-        }
-        
-        .btn-danger {
-            background-color: var(--danger-color);
-            border-color: var(--danger-color);
-        }
-        
+
         .table {
-            border-radius: 0.5rem;
+            border-radius: 15px;
             overflow: hidden;
         }
-        
+
         .table thead th {
-            background-color: var(--light-color);
-            border-bottom: 2px solid #e3e6f0;
-            font-weight: 600;
+            background: linear-gradient(135deg, var(--primary-color), #224abe);
+            color: white;
+            border: none;
         }
-        
-        .badge {
-            font-weight: 600;
-            padding: 0.35em 0.65em;
+
+        .alert {
+            border-radius: 15px;
+            border: none;
         }
-        
-        .footer {
-            background-color: #fff;
-            box-shadow: 0 -0.15rem 1.75rem 0 rgba(58, 59, 69, 0.1);
-            padding: 1rem 0;
-        }
-        
-        /* Custom animations */
-        .fade-in {
-            animation: fadeIn 0.5s ease-in;
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-        
-        /* Dashboard stats cards */
-        .stat-card {
-            border-left: 0.25rem solid;
-            border-radius: 0.5rem;
-        }
-        
-        .stat-card-primary {
-            border-left-color: var(--primary-color);
-        }
-        
-        .stat-card-success {
-            border-left-color: var(--secondary-color);
-        }
-        
-        .stat-card-warning {
-            border-left-color: var(--accent-color);
-        }
-        
-        .stat-card-danger {
-            border-left-color: var(--danger-color);
-        }
-        
-        .stat-card-icon {
-            font-size: 2rem;
-            opacity: 0.3;
-        }
-        
-        /* Progress bars */
-        .progress {
-            height: 0.5rem;
-            border-radius: 0.25rem;
-        }
-        
+
         /* Custom scrollbar */
         ::-webkit-scrollbar {
             width: 8px;
         }
-        
+
         ::-webkit-scrollbar-track {
             background: #f1f1f1;
         }
-        
+
         ::-webkit-scrollbar-thumb {
-            background: #c1c1c1;
+            background: var(--primary-color);
             border-radius: 4px;
         }
-        
-        ::-webkit-scrollbar-thumb:hover {
-            background: #a8a8a8;
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .navbar-brand {
+                font-size: 1.2rem;
+            }
+            
+            .card {
+                margin: 1rem;
+            }
+            
+            .table-responsive {
+                border-radius: 15px;
+                overflow: hidden;
+            }
+        }
+
+        /* Animation classes */
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Custom loading spinner */
+        .spinner-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        .custom-spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
     </style>
+    
     {% block styles %}{% endblock %}
 </head>
 <body>
-    <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-white py-3">
-        <div class="container-fluid">
+    <!-- Loading Spinner -->
+    <div id="loading-spinner" class="spinner-overlay" style="display: none;">
+        <div class="custom-spinner"></div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark mb-4">
+        <div class="container">
             <a class="navbar-brand" href="{{ url_for('main.home') }}">
-                <i class="fas fa-graduation-cap text-primary me-2"></i>
-                <span class="text-primary">EduManager</span>
+                <i class="fas fa-school me-2"></i>School Management
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
@@ -207,24 +204,75 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     {% if current_user.is_authenticated %}
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
-                                <i class="fas fa-user-circle me-1"></i> {{ current_user.username }}
+                        {% if current_user.role == 'admin' %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url_for('admin.dashboard') }}">
+                                    <i class="fas fa-tachometer-alt me-1"></i>Dashboard
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url_for('admin.students') }}">
+                                    <i class="fas fa-users me-1"></i>Students
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url_for('admin.teachers') }}">
+                                    <i class="fas fa-chalkboard-teacher me-1"></i>Teachers
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url_for('admin.classes') }}">
+                                    <i class="fas fa-chalkboard me-1"></i>Classes
+                                </a>
+                            </li>
+                        {% elif current_user.role == 'teacher' %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url_for('teacher.dashboard') }}">
+                                    <i class="fas fa-tachometer-alt me-1"></i>Dashboard
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url_for('teacher.students') }}">
+                                    <i class="fas fa-users me-1"></i>Students
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url_for('teacher.exams') }}">
+                                    <i class="fas fa-file-alt me-1"></i>Exams
+                                </a>
+                            </li>
+                        {% elif current_user.role == 'student' %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url_for('student.dashboard') }}">
+                                    <i class="fas fa-tachometer-alt me-1"></i>Dashboard
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url_for('student.exams') }}">
+                                    <i class="fas fa-file-alt me-1"></i>Exams
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url_for('student.results') }}">
+                                    <i class="fas fa-chart-bar me-1"></i>Results
+                                </a>
+                            </li>
+                        {% endif %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('auth.logout') }}">
+                                <i class="fas fa-sign-out-alt me-1"></i>Logout
                             </a>
-                            <ul class="dropdown-menu dropdown-menu-end">
-                                <li>
-                                    <span class="dropdown-item-text text-muted">
-                                        <small>Role: {{ current_user.role.capitalize() }}</small>
-                                    </span>
-                                </li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" href="#"><i class="fas fa-user-cog me-2"></i>Profile</a></li>
-                                <li><a class="dropdown-item" href="{{ url_for('auth.logout') }}"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
-                            </ul>
                         </li>
                     {% else %}
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('auth.login') }}"><i class="fas fa-sign-in-alt me-1"></i> Login</a>
+                            <a class="nav-link" href="{{ url_for('auth.school_login') }}">
+                                <i class="fas fa-school me-1"></i>School Login
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('auth.master_admin_login') }}">
+                                <i class="fas fa-user-shield me-1"></i>Master Admin
+                            </a>
                         </li>
                     {% endif %}
                 </ul>
@@ -232,215 +280,69 @@
         </div>
     </nav>
 
-    <div class="container-fluid">
-        <div class="row">
-            {% if current_user.is_authenticated %}
-                <!-- Sidebar -->
-                <div class="col-md-3 col-lg-2 d-md-block sidebar collapse">
-                    <div class="position-sticky pt-3">
-                        <ul class="nav flex-column">
-                            {% if current_user.role == 'admin' %}
-                                <li class="nav-item">
-                                    <a class="nav-link {% if request.endpoint == 'admin.dashboard' %}active{% endif %}" href="{{ url_for('admin.dashboard') }}">
-                                        <i class="fas fa-tachometer-alt"></i> Dashboard
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link {% if 'admin.students' in request.endpoint %}active{% endif %}" href="{{ url_for('admin.students') }}">
-                                        <i class="fas fa-user-graduate"></i> Students
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link {% if 'admin.teachers' in request.endpoint %}active{% endif %}" href="{{ url_for('admin.teachers') }}">
-                                        <i class="fas fa-chalkboard-teacher"></i> Teachers
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link {% if 'admin.classes' in request.endpoint %}active{% endif %}" href="{{ url_for('admin.classes') }}">
-                                        <i class="fas fa-school"></i> Classes
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link {% if 'admin.subjects' in request.endpoint %}active{% endif %}" href="{{ url_for('admin.subjects') }}">
-                                        <i class="fas fa-book"></i> Subjects
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link {% if 'admin.exams' in request.endpoint %}active{% endif %}" href="{{ url_for('admin.exams') }}">
-                                        <i class="fas fa-file-alt"></i> Exams
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link {% if 'admin.top_students' in request.endpoint or 'admin.class_rankings' in request.endpoint %}active{% endif %}" href="{{ url_for('admin.top_students') }}">
-                                        <i class="fas fa-chart-bar"></i> Reports
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link {% if 'admin.settings' in request.endpoint %}active{% endif %}" href="{{ url_for('admin.settings') }}">
-                                        <i class="fas fa-cog"></i> Settings
-                                    </a>
-                                </li>
-                            {% elif current_user.role == 'teacher' %}
-                                <li class="nav-item">
-                                    <a class="nav-link {% if request.endpoint == 'teacher.dashboard' %}active{% endif %}" href="{{ url_for('teacher.dashboard') }}">
-                                        <i class="fas fa-tachometer-alt"></i> Dashboard
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link {% if 'teacher.students' in request.endpoint %}active{% endif %}" href="{{ url_for('teacher.students') }}">
-                                        <i class="fas fa-user-graduate"></i> Students
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link {% if 'teacher.classes' in request.endpoint %}active{% endif %}" href="{{ url_for('teacher.classes') }}">
-                                        <i class="fas fa-school"></i> Classes
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link {% if 'teacher.subjects' in request.endpoint %}active{% endif %}" href="{{ url_for('teacher.subjects') }}">
-                                        <i class="fas fa-book"></i> Subjects
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link {% if 'teacher.exams' in request.endpoint %}active{% endif %}" href="{{ url_for('teacher.exams') }}">
-                                        <i class="fas fa-file-alt"></i> Exams
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link {% if 'teacher.attendance' in request.endpoint %}active{% endif %}" href="{{ url_for('teacher.attendance') }}">
-                                        <i class="fas fa-calendar-check"></i> Attendance
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link {% if 'teacher.notes' in request.endpoint %}active{% endif %}" href="{{ url_for('teacher.notes') }}">
-                                        <i class="fas fa-sticky-note"></i> Notes
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link {% if 'teacher.questions' in request.endpoint %}active{% endif %}" href="{{ url_for('teacher.questions') }}">
-                                        <i class="fas fa-question-circle"></i> Q&A
-                                    </a>
-                                </li>
-                            {% else %}
-                                <li class="nav-item">
-                                    <a class="nav-link {% if request.endpoint == 'student.dashboard' %}active{% endif %}" href="{{ url_for('student.dashboard') }}">
-                                        <i class="fas fa-tachometer-alt"></i> Dashboard
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link {% if 'student.marks' in request.endpoint %}active{% endif %}" href="{{ url_for('student.marks') }}">
-                                        <i class="fas fa-chart-line"></i> Marks
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link {% if 'student.attendance' in request.endpoint %}active{% endif %}" href="{{ url_for('student.attendance') }}">
-                                        <i class="fas fa-calendar-check"></i> Attendance
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link {% if 'student.subjects' in request.endpoint %}active{% endif %}" href="{{ url_for('student.subjects') }}">
-                                        <i class="fas fa-book"></i> Subjects
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link {% if 'student.exams' in request.endpoint %}active{% endif %}" href="{{ url_for('student.exams') }}">
-                                        <i class="fas fa-file-alt"></i> Exams
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link {% if 'student.notes' in request.endpoint %}active{% endif %}" href="{{ url_for('student.notes') }}">
-                                        <i class="fas fa-sticky-note"></i> Notes
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link {% if 'student.questions' in request.endpoint %}active{% endif %}" href="{{ url_for('student.questions') }}">
-                                        <i class="fas fa-question-circle"></i> Q&A
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link {% if 'student.class_ranking' in request.endpoint %}active{% endif %}" href="{{ url_for('student.class_ranking') }}">
-                                        <i class="fas fa-trophy"></i> Rankings
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link {% if 'student.goals' in request.endpoint %}active{% endif %}" href="{{ url_for('student.goals') }}">
-                                        <i class="fas fa-bullseye"></i> Goals
-                                    </a>
-                                </li>
-                            {% endif %}
-                        </ul>
+    <!-- Flash Messages -->
+    <div class="container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                     </div>
-                </div>
-                
-                <!-- Main Content -->
-                <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4 content-wrapper">
-                    {% with messages = get_flashed_messages(with_categories=true) %}
-                        {% if messages %}
-                            {% for category, message in messages %}
-                                <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
-                                    {{ message }}
-                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                                </div>
-                            {% endfor %}
-                        {% endif %}
-                    {% endwith %}
-                    
-                    {% block content %}{% endblock %}
-                    
-                    <!-- Footer -->
-                    <footer class="footer mt-auto py-3 text-center">
-                        <div class="container">
-                            <span class="text-muted">© 2023 EduManager - Student Management System</span>
-                        </div>
-                    </footer>
-                </main>
-            {% else %}
-                <!-- Content for non-authenticated users -->
-                <main class="col-12 py-4 content-wrapper">
-                    {% with messages = get_flashed_messages(with_categories=true) %}
-                        {% if messages %}
-                            {% for category, message in messages %}
-                                <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
-                                    {{ message }}
-                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                                </div>
-                            {% endfor %}
-                        {% endif %}
-                    {% endwith %}
-                    
-                    {% block main_content %}{{ self.content() }}{% endblock %}
-                    
-                    <!-- Footer -->
-                    <footer class="footer mt-auto py-3 text-center">
-                        <div class="container">
-                            <span class="text-muted">© 2023 EduManager - Student Management System</span>
-                        </div>
-                    </footer>
-                </main>
+                {% endfor %}
             {% endif %}
-        </div>
+        {% endwith %}
     </div>
 
-    <!-- Bootstrap JS Bundle with Popper -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Main Content -->
+    <main class="container py-4">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-light py-4 mt-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5>School Management System</h5>
+                    <p class="mb-0">A comprehensive solution for managing multiple schools efficiently.</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <p class="mb-0">&copy; 2024 School Management System. All rights reserved.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    
     <!-- Custom JS -->
     <script>
-        // Initialize tooltips
-        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-            return new bootstrap.Tooltip(tooltipTriggerEl)
-        })
-        
-        // Auto-hide alerts after 5 seconds
-        window.setTimeout(function() {
-            document.querySelectorAll('.alert').forEach(function(alert) {
-                var bsAlert = new bootstrap.Alert(alert);
-                bsAlert.close();
+        // Show loading spinner on form submission
+        document.querySelectorAll('form').forEach(form => {
+            form.addEventListener('submit', () => {
+                document.getElementById('loading-spinner').style.display = 'flex';
             });
-        }, 5000);
+        });
+
+        // Hide loading spinner when page is loaded
+        window.addEventListener('load', () => {
+            document.getElementById('loading-spinner').style.display = 'none';
+        });
+
+        // Auto-hide flash messages after 5 seconds
+        document.querySelectorAll('.alert').forEach(alert => {
+            setTimeout(() => {
+                alert.classList.remove('show');
+                setTimeout(() => alert.remove(), 150);
+            }, 5000);
+        });
     </script>
+    
     {% block scripts %}{% endblock %}
 </body>
 </html> 

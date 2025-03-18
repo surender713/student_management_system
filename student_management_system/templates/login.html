@@ -6,6 +6,7 @@
         <div class="card shadow">
             <div class="card-header bg-primary text-white text-center">
                 <h3><i class="fas fa-sign-in-alt me-2"></i>Login</h3>
+                <p class="mb-0">School: {{ session.get('school_name', '') }}</p>
             </div>
             
             <div class="card-body">
@@ -53,16 +54,16 @@
                         <input type="hidden" id="role-input" name="role" value="">
                         
                         <div class="mb-3">
-                            {{ form.email.label(class="form-label") }}
-                            {% if form.email.errors %}
-                                {{ form.email(class="form-control is-invalid") }}
+                            {{ form.username.label(class="form-label") }}
+                            {% if form.username.errors %}
+                                {{ form.username(class="form-control is-invalid") }}
                                 <div class="invalid-feedback">
-                                    {% for error in form.email.errors %}
+                                    {% for error in form.username.errors %}
                                         <span>{{ error }}</span>
                                     {% endfor %}
                                 </div>
                             {% else %}
-                                {{ form.email(class="form-control") }}
+                                {{ form.username(class="form-control") }}
                             {% endif %}
                         </div>
                         <div class="mb-3">
@@ -101,12 +102,16 @@
                 <div id="login-footer">
                     <small class="text-muted">
                         <a href="{{ url_for('auth.reset_request') }}">Forgot Password?</a>
+                        &nbsp;|&nbsp;
+                        <a href="{{ url_for('auth.school_login') }}">Change School</a>
                     </small>
                 </div>
                 <div id="signup-options" style="display: none;">
                     <small class="text-muted">
                         New user? 
                         <span id="signup-link"></span>
+                        &nbsp;|&nbsp;
+                        <a href="{{ url_for('auth.school_login') }}">Change School</a>
                     </small>
                 </div>
             </div>

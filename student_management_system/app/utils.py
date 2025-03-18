@@ -8,6 +8,8 @@ from app import db
 from app.models import User, Student, Teacher, Admin, Mark, Subject, Class, Attendance, Goal, Exam
 from flask_login import login_required, current_user
 from flask import redirect, url_for, flash
+from functools import wraps
+from flask import abort
 
 # Function to generate class rankings
 def generate_class_rankings(class_id):
@@ -324,4 +326,13 @@ def student_required(f):
             return redirect(url_for('main.home'))
         return f(*args, **kwargs)
     decorated_function.__name__ = f.__name__
+    return decorated_function
+
+def master_admin_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not current_user.is_authenticated or current_user.role != 'master_admin':
+            flash('You do not have permission to access this page. Please login as a Master Admin.', 'danger')
+            return redirect(url_for('auth.master_admin_login'))
+        return f(*args, **kwargs)
     return decorated_function 

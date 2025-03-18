@@ -204,6 +204,19 @@
                         <div class="col-md-6">
                             <h5 class="mb-3">Class Information</h5>
                             <div class="mb-3">
+                                {{ form.school_id.label(class="form-label") }}
+                                {% if form.school_id.errors %}
+                                    {{ form.school_id(class="form-select is-invalid") }}
+                                    <div class="invalid-feedback">
+                                        {% for error in form.school_id.errors %}
+                                            <span>{{ error }}</span>
+                                        {% endfor %}
+                                    </div>
+                                {% else %}
+                                    {{ form.school_id(class="form-select") }}
+                                {% endif %}
+                            </div>
+                            <div class="mb-3">
                                 {{ form.class_id.label(class="form-label") }}
                                 {% if form.class_id.errors %}
                                     {{ form.class_id(class="form-select is-invalid") }}
@@ -246,6 +259,22 @@
                     passwordField.type = 'password';
                     this.classList.remove('fa-eye-slash');
                     this.classList.add('fa-eye');
+                }
+            });
+        }
+
+        // Handle school selection
+        const schoolSelect = document.getElementById('school_id');
+        const classSelect = document.getElementById('class_id');
+        
+        if (schoolSelect && classSelect) {
+            schoolSelect.addEventListener('change', function() {
+                const schoolId = this.value;
+                if (schoolId) {
+                    // Update URL with selected school_id
+                    const url = new URL(window.location.href);
+                    url.searchParams.set('school_id', schoolId);
+                    window.location.href = url.toString();
                 }
             });
         }

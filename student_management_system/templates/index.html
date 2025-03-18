@@ -1,64 +1,178 @@
 {% extends "layout.html" %}
 
 {% block content %}
-<div class="row">
-    <div class="col-md-12 text-center mb-5">
-        <h1 class="display-4">Welcome to Student Management System</h1>
-        <p class="lead">A comprehensive platform for managing student data, performance tracking, and academic analytics.</p>
-        <hr class="my-4">
-        <p>Login to access your dashboard and explore the features.</p>
-        <a href="{{ url_for('auth.login') }}" class="btn btn-primary btn-lg">Login</a>
+<!-- Hero Section -->
+<div class="bg-primary text-white py-5 mb-5">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <h1 class="display-4 fw-bold mb-4">Welcome to School Management System</h1>
+                <p class="lead mb-4">A comprehensive solution for managing multiple schools efficiently. Streamline your educational institution's operations with our powerful platform.</p>
+                <div class="d-flex gap-3">
+                    <a href="{{ url_for('auth.school_login') }}" class="btn btn-light btn-lg">
+                        <i class="fas fa-school me-2"></i>School Login
+                    </a>
+                    <a href="{{ url_for('auth.master_admin_login') }}" class="btn btn-outline-light btn-lg">
+                        <i class="fas fa-user-shield me-2"></i>Master Admin
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-6 text-center">
+                <img src="{{ url_for('static', filename='images/hero-image.svg') }}" alt="School Management" class="img-fluid">
+            </div>
+        </div>
     </div>
 </div>
 
-<div class="row">
-    <div class="col-md-4 mb-4">
-        <div class="card h-100 shadow">
-            <div class="card-body text-center">
-                <i class="fas fa-user-shield fa-4x mb-3 text-primary"></i>
-                <h3 class="card-title">Admin Features</h3>
-                <ul class="list-group list-group-flush">
-                    <li class="list-group-item">Full Control Dashboard</li>
-                    <li class="list-group-item">Manage Students & Teachers</li>
-                    <li class="list-group-item">Class-Wise Rankings</li>
-                    <li class="list-group-item">Subject-Wise Performance Analysis</li>
-                    <li class="list-group-item">Top Students Overview</li>
-                    <li class="list-group-item">Data Export</li>
-                </ul>
+<!-- Features Section -->
+<div class="container mb-5">
+    <h2 class="text-center mb-5">Key Features</h2>
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body text-center p-4">
+                    <div class="feature-icon mb-4">
+                        <i class="fas fa-users fa-3x text-primary"></i>
+                    </div>
+                    <h3 class="h5 mb-3">Student Management</h3>
+                    <p class="text-muted mb-0">Easily manage student records, attendance, and academic progress in one place.</p>
+                </div>
             </div>
         </div>
-    </div>
-    <div class="col-md-4 mb-4">
-        <div class="card h-100 shadow">
-            <div class="card-body text-center">
-                <i class="fas fa-chalkboard-teacher fa-4x mb-3 text-primary"></i>
-                <h3 class="card-title">Teacher Features</h3>
-                <ul class="list-group list-group-flush">
-                    <li class="list-group-item">Class Performance Dashboard</li>
-                    <li class="list-group-item">Subject Analytics</li>
-                    <li class="list-group-item">Student Profiles</li>
-                    <li class="list-group-item">Mark Management</li>
-                    <li class="list-group-item">Attendance Tracking</li>
-                    <li class="list-group-item">Performance Reports</li>
-                </ul>
+        <div class="col-md-4">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body text-center p-4">
+                    <div class="feature-icon mb-4">
+                        <i class="fas fa-chalkboard-teacher fa-3x text-primary"></i>
+                    </div>
+                    <h3 class="h5 mb-3">Teacher Management</h3>
+                    <p class="text-muted mb-0">Streamline teacher assignments, schedules, and performance tracking.</p>
+                </div>
             </div>
         </div>
-    </div>
-    <div class="col-md-4 mb-4">
-        <div class="card h-100 shadow">
-            <div class="card-body text-center">
-                <i class="fas fa-user-graduate fa-4x mb-3 text-primary"></i>
-                <h3 class="card-title">Student Features</h3>
-                <ul class="list-group list-group-flush">
-                    <li class="list-group-item">Personal Dashboard</li>
-                    <li class="list-group-item">Class Ranking Display</li>
-                    <li class="list-group-item">Subject-Wise Analysis</li>
-                    <li class="list-group-item">Performance Trend Graphs</li>
-                    <li class="list-group-item">Top Student Insights</li>
-                    <li class="list-group-item">Goal Setting</li>
-                </ul>
+        <div class="col-md-4">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body text-center p-4">
+                    <div class="feature-icon mb-4">
+                        <i class="fas fa-file-alt fa-3x text-primary"></i>
+                    </div>
+                    <h3 class="h5 mb-3">Exam Management</h3>
+                    <p class="text-muted mb-0">Create and manage exams, track results, and generate detailed reports.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body text-center p-4">
+                    <div class="feature-icon mb-4">
+                        <i class="fas fa-chart-bar fa-3x text-primary"></i>
+                    </div>
+                    <h3 class="h5 mb-3">Analytics & Reports</h3>
+                    <p class="text-muted mb-0">Get insights into student performance and school statistics.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body text-center p-4">
+                    <div class="feature-icon mb-4">
+                        <i class="fas fa-bell fa-3x text-primary"></i>
+                    </div>
+                    <h3 class="h5 mb-3">Notifications</h3>
+                    <p class="text-muted mb-0">Stay updated with real-time notifications for important events and updates.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body text-center p-4">
+                    <div class="feature-icon mb-4">
+                        <i class="fas fa-shield-alt fa-3x text-primary"></i>
+                    </div>
+                    <h3 class="h5 mb-3">Secure Access</h3>
+                    <p class="text-muted mb-0">Role-based access control ensures data security and privacy.</p>
+                </div>
             </div>
         </div>
     </div>
 </div>
+
+<!-- How It Works Section -->
+<div class="bg-light py-5 mb-5">
+    <div class="container">
+        <h2 class="text-center mb-5">How It Works</h2>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="text-center">
+                    <div class="step-number mb-3">
+                        <span class="badge bg-primary rounded-circle p-3">1</span>
+                    </div>
+                    <h3 class="h5 mb-3">School Registration</h3>
+                    <p class="text-muted mb-0">Register your school and get access to the platform.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="text-center">
+                    <div class="step-number mb-3">
+                        <span class="badge bg-primary rounded-circle p-3">2</span>
+                    </div>
+                    <h3 class="h5 mb-3">Add Users</h3>
+                    <p class="text-muted mb-0">Add teachers, students, and administrators to your school.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="text-center">
+                    <div class="step-number mb-3">
+                        <span class="badge bg-primary rounded-circle p-3">3</span>
+                    </div>
+                    <h3 class="h5 mb-3">Start Managing</h3>
+                    <p class="text-muted mb-0">Begin managing your school's operations efficiently.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Contact Section -->
+<div class="container mb-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8 text-center">
+            <h2 class="mb-4">Need Help?</h2>
+            <p class="lead mb-4">Our support team is here to help you with any questions or concerns.</p>
+            <a href="mailto:support@schoolmanagement.com" class="btn btn-primary btn-lg">
+                <i class="fas fa-envelope me-2"></i>Contact Support
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block styles %}
+<style>
+    .feature-icon {
+        width: 80px;
+        height: 80px;
+        margin: 0 auto;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(78, 115, 223, 0.1);
+        border-radius: 50%;
+    }
+
+    .step-number .badge {
+        font-size: 1.5rem;
+        width: 60px;
+        height: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto;
+    }
+
+    .hero-image {
+        max-width: 100%;
+        height: auto;
+    }
+</style>
 {% endblock %} 

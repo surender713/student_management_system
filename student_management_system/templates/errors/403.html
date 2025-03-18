@@ -1,0 +1,28 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body text-center p-5">
+                    <div class="mb-4">
+                        <i class="fas fa-exclamation-triangle text-warning fa-5x"></i>
+                    </div>
+                    <h1 class="display-4 mb-4">403</h1>
+                    <h2 class="mb-4">Access Forbidden</h2>
+                    <p class="lead mb-4">You don't have permission to access this page.</p>
+                    <div class="d-flex justify-content-center gap-3">
+                        <a href="{{ url_for('main.home') }}" class="btn btn-primary">
+                            <i class="fas fa-home me-2"></i>Back to Home
+                        </a>
+                        <a href="{{ url_for('auth.school_login') }}" class="btn btn-outline-primary">
+                            <i class="fas fa-sign-in-alt me-2"></i>Login
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

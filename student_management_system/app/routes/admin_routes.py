@@ -1,8 +1,8 @@
 from flask import Blueprint, render_template, redirect, url_for, flash, request, Response
 from flask_login import login_required, current_user
 from app import db, bcrypt
-from app.models import User, Admin, Teacher, Student, Class, Subject, Mark, Attendance, School, Exam, Ranking
-from app.utils import generate_class_rankings, generate_top_students, export_students_to_csv, user_exists, admin_required
+from app.models import User, Admin, Teacher, Student, Class, Subject, Mark, Attendance, School, Exam, Ranking, MasterAdmin
+from app.utils import generate_class_rankings, generate_top_students, export_students_to_csv, user_exists, admin_required, master_admin_required
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, SelectField, DateField, TextAreaField, FloatField, FileField
 from wtforms.validators import DataRequired, Length, Email, ValidationError, EqualTo, NumberRange
@@ -1434,4 +1434,85 @@ def restore_database():
         # This is a placeholder for actual restore functionality
         # In a real application, you would restore from the uploaded file
         flash('Database restore functionality is not implemented yet.', 'info')
-    return redirect(url_for('admin.settings')) 
+    return redirect(url_for('admin.settings'))
+
+# School Management Routes for Master Admin
+@admin.route('/manage-schools')
+@login_required
+@master_admin_required
+def manage_schools():
+    schools = School.query.all()
+    return render_template('admin/manage_schools.html', title='Manage Schools', schools=schools)
+
+@admin.route('/add-school', methods=['GET', 'POST'])
+@login_required
+@master_admin_required
+def add_school():
+    if request.method == 'POST':
+        school_number = request.form.get('school_number')
+        name = request.form.get('name')
+        password = request.form.get('password')
+        
+        if School.query.filter_by(school_number=school_number).first():
+            flash('School number already exists.', 'danger')
+            return redirect(url_for('admin.add_school'))
+        
+        hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
+        school = School(
+            school_number=school_number,
+            name=name,
+            password=hashed_password,
+            address=request.form.get('address'),
+            phone=request.form.get('phone'),
+            email=request.form.get('email'),
+            website=request.form.get('website')
+        )
+        
+        db.session.add(school)
+        db.session.commit()
+        
+        flash('School added successfully!', 'success')
+        return redirect(url_for('admin.manage_schools'))
+    
+    return render_template('admin/add_school.html', title='Add New School')
+
+@admin.route('/edit-school/<int:school_id>', methods=['GET', 'POST'])
+@login_required
+@master_admin_required
+def edit_school(school_id):
+    school = School.query.get_or_404(school_id)
+    
+    if request.method == 'POST':
+        school.name = request.form.get('name')
+        school.address = request.form.get('address')
+        school.phone = request.form.get('phone')
+        school.email = request.form.get('email')
+        school.website = request.form.get('website')
+        school.is_active = request.form.get('is_active') == 'on'
+        
+        if request.form.get('password'):
+            school.password = bcrypt.generate_password_hash(request.form.get('password')).decode('utf-8')
+        
+        db.session.commit()
+        flash('School updated successfully!', 'success')
+        return redirect(url_for('admin.manage_schools'))
+    
+    return render_template('admin/edit_school.html', title='Edit School', school=school)
+
+@admin.route('/delete-school/<int:school_id>')
+@login_required
+@master_admin_required
+def delete_school(school_id):
+    school = School.query.get_or_404(school_id)
+    
+    # Delete all associated data
+    Admin.query.filter_by(school_id=school_id).delete()
+    Teacher.query.filter_by(school_id=school_id).delete()
+    Student.query.filter_by(school_id=school_id).delete()
+    Class.query.filter_by(school_id=school_id).delete()
+    
+    db.session.delete(school)
+    db.session.commit()
+    
+    flash('School deleted successfully!', 'success')
+    return redirect(url_for('admin.manage_schools')) 

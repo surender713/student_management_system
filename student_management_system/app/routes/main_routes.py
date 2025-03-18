@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, redirect, url_for
+from flask import Blueprint, render_template, redirect, url_for, session
 from flask_login import current_user, login_required
 
 # Create blueprint
@@ -9,16 +9,17 @@ main = Blueprint('main', __name__)
 @main.route('/home')
 def home():
     if current_user.is_authenticated:
-        # Redirect based on user role
-        if current_user.role == 'admin':
+        if current_user.role == 'master_admin':
+            return redirect(url_for('admin.manage_schools'))
+        elif current_user.role == 'admin':
             return redirect(url_for('admin.dashboard'))
         elif current_user.role == 'teacher':
             return redirect(url_for('teacher.dashboard'))
         else:  # student
             return redirect(url_for('student.dashboard'))
     
-    # If not authenticated, show landing page
-    return render_template('index.html', title='Home')
+    # If not logged in, redirect to school login
+    return redirect(url_for('auth.school_login'))
 
 # About route
 @main.route('/about')
